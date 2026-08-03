@@ -3,21 +3,29 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiMenu, HiX } from "react-icons/hi";
+import { HiOutlineShoppingCart } from "react-icons/hi2";
 import Logo from "./Logo";
 import Button from "./ui/Button";
+import CartDrawer from "./marketplace/CartDrawer";
+import { useCartStore, selectTotalItems } from "@/store/cart";
+import { pageRoutes } from "@/lib/routes";
 
 const navLinks = [
-	{ label: "About", href: "#about" },
-	{ label: "How it Works", href: "#how-it-works" },
-	{ label: "Features", href: "#features" },
-	{ label: "FAQ", href: "#faq" },
+	{ label: "Marketplace", href: pageRoutes.marketplace },
+	{ label: "About", href: "/#about" },
+	{ label: "How it Works", href: "/#how-it-works" },
+	{ label: "FAQ", href: "/#faq" },
 ];
 
 export default function Header() {
 	const [scrolled, setScrolled] = useState(false);
 	const [open, setOpen] = useState(false);
+	const [cartOpen, setCartOpen] = useState(false);
+	const [mounted, setMounted] = useState(false);
+	const totalItems = useCartStore(selectTotalItems);
 
 	useEffect(() => {
+		setMounted(true);
 		const onScroll = () => setScrolled(window.scrollY > 20);
 		onScroll();
 		window.addEventListener("scroll", onScroll);
@@ -50,26 +58,49 @@ export default function Header() {
 					))}
 				</nav>
 
-				<div className="hidden md:flex items-center gap-4">
-					<Button
-						href="/login"
-						variant={scrolled ? "primary" : "ghost"}
-						className="min-w-0 px-6 py-2.5"
+				<div className="flex items-center gap-3 md:gap-4">
+					<button
+						aria-label="Open cart"
+						onClick={() => setCartOpen(true)}
+						className={`relative w-10 h-10 flex items-center justify-center rounded-full duration-150 ${
+							scrolled
+								? "text-neutral-500 hover:bg-neutral-100"
+								: "text-white hover:bg-white/10"
+						}`}
 					>
-						Login
-					</Button>
-					<Button href="/signup" variant="secondary" className="min-w-0 px-6 py-2.5">
-						Get Started
-					</Button>
-				</div>
+						<HiOutlineShoppingCart className="text-xl" />
+						{mounted && totalItems > 0 && (
+							<span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 flex items-center justify-center rounded-full bg-secondary-500 text-white text-[10px] font-bold">
+								{totalItems}
+							</span>
+						)}
+					</button>
 
-				<button
-					aria-label="Toggle menu"
-					onClick={() => setOpen(true)}
-					className={`md:hidden text-3xl ${scrolled ? "text-primary" : "text-white"}`}
-				>
-					<HiMenu />
-				</button>
+					<div className="hidden md:flex items-center gap-4">
+						<Button
+							href={pageRoutes.auth.login}
+							variant={scrolled ? "primary" : "ghost"}
+							className="min-w-0 px-6 py-2.5"
+						>
+							Login
+						</Button>
+						<Button
+							href={pageRoutes.auth.signup}
+							variant="secondary"
+							className="min-w-0 px-6 py-2.5"
+						>
+							Get Started
+						</Button>
+					</div>
+
+					<button
+						aria-label="Toggle menu"
+						onClick={() => setOpen(true)}
+						className={`md:hidden text-3xl ${scrolled ? "text-primary" : "text-white"}`}
+					>
+						<HiMenu />
+					</button>
+				</div>
 			</div>
 
 			<AnimatePresence>
@@ -117,10 +148,10 @@ export default function Header() {
 							</nav>
 
 							<div className="mt-auto flex flex-col gap-3">
-								<Button href="/login" variant="primary" className="w-full">
+								<Button href={pageRoutes.auth.login} variant="primary" className="w-full">
 									Login
 								</Button>
-								<Button href="/signup" variant="secondary" className="w-full">
+								<Button href={pageRoutes.auth.signup} variant="secondary" className="w-full">
 									Get Started
 								</Button>
 							</div>
@@ -128,6 +159,8 @@ export default function Header() {
 					</>
 				)}
 			</AnimatePresence>
+
+			<CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
 		</motion.header>
 	);
 }

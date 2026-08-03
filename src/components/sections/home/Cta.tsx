@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
+import { pageRoutes } from "@/lib/routes";
 
 export default function Cta() {
 	return (
@@ -39,10 +40,10 @@ export default function Cta() {
 							buying it, we make the connection simple and secure.
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 mt-2">
-							<Button href="/signup?role=farmer" variant="secondary">
+							<Button href={`${pageRoutes.auth.signup}?role=farmer`} variant="secondary">
 								I&apos;m a Farmer
 							</Button>
-							<Button href="/signup?role=buyer" variant="reverse">
+							<Button href={pageRoutes.marketplace} variant="reverse">
 								I&apos;m a Buyer
 							</Button>
 						</div>

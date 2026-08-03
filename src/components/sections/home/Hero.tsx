@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { HiOutlineShieldCheck } from "react-icons/hi";
 import Button from "@/components/ui/Button";
+import { pageRoutes } from "@/lib/routes";
 
 const container = {
 	hidden: {},
@@ -63,10 +64,10 @@ export default function Hero() {
 				</motion.p>
 
 				<motion.div variants={item} className="flex flex-col sm:flex-row gap-4 mt-2">
-					<Button href="/signup?role=farmer" variant="secondary">
+					<Button href={`${pageRoutes.auth.signup}?role=farmer`} variant="secondary">
 						Join as a Farmer
 					</Button>
-					<Button href="/signup?role=buyer" variant="ghost">
+					<Button href={pageRoutes.marketplace} variant="ghost">
 						Shop Fresh Produce
 					</Button>
 				</motion.div>

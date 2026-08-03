@@ -1,14 +1,15 @@
 import { FaFacebookF, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import Logo from "./Logo";
+import { pageRoutes } from "@/lib/routes";
 
 const linkColumns = [
 	{
 		title: "Marketplace",
 		links: [
-			{ label: "Browse Produce", href: "#features" },
-			{ label: "Sell as a Farmer", href: "/signup" },
+			{ label: "Browse Produce", href: pageRoutes.marketplace },
+			{ label: "Sell as a Farmer", href: `${pageRoutes.auth.signup}?role=farmer` },
 			{ label: "How it Works", href: "#how-it-works" },
-			{ label: "Market Prices", href: "#features" },
+			{ label: "Market Prices", href: pageRoutes.marketplace },
 		],
 	},
 	{

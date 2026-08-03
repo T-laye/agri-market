@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import AuthLayout from "@/components/auth/AuthLayout";
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
+import { pageRoutes } from "@/lib/routes";
 
 export const metadata: Metadata = {
 	title: "Reset Password | AgriMarket Nigeria",
@@ -15,7 +16,7 @@ export default function ForgotPasswordPage() {
 			footer={
 				<p className="text-sm text-neutral-400 text-center">
 					Remembered it?{" "}
-					<Link href="/login" className="text-primary font-semibold hover:underline">
+					<Link href={pageRoutes.auth.login} className="text-primary font-semibold hover:underline">
 						Back to login
 					</Link>
 				</p>

@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { login, type AuthState } from "@/app/auth/actions";
 import Button from "@/components/ui/Button";
+import { pageRoutes } from "@/lib/routes";
 
 const initialState: AuthState = { error: null };
 
@@ -33,7 +34,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
 					<label htmlFor="password" className="text-sm font-medium text-neutral-500">
 						Password
 					</label>
-					<Link href="/forgot-password" className="text-xs text-primary hover:underline">
+					<Link href={pageRoutes.auth.forgotPassword} className="text-xs text-primary hover:underline">
 						Forgot password?
 					</Link>
 				</div>

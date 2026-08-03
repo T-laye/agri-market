@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import AuthLayout from "@/components/auth/AuthLayout";
 import SignupForm from "@/components/auth/SignupForm";
+import { pageRoutes } from "@/lib/routes";
 
 export const metadata: Metadata = {
 	title: "Sign Up | AgriMarket Nigeria",
@@ -22,7 +23,7 @@ export default async function SignupPage({
 			footer={
 				<p className="text-sm text-neutral-400 text-center">
 					Already have an account?{" "}
-					<Link href="/login" className="text-primary font-semibold hover:underline">
+					<Link href={pageRoutes.auth.login} className="text-primary font-semibold hover:underline">
 						Login
 					</Link>
 				</p>

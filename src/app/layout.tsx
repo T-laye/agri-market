@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const figtree = localFont({
@@ -45,22 +46,26 @@ const figtree = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "AgriMarket Nigeria | Direct Farm-to-Buyer Marketplace",
-  description:
-    "AgriMarket connects Nigerian farmers directly with buyers through transparent listings, secure escrow payments, and real-time market information.",
+	title: "AgriMarket Nigeria | Direct Farm-to-Buyer Marketplace",
+	description:
+		"AgriMarket connects Nigerian farmers directly with buyers through transparent listings, secure escrow payments, and real-time market information.",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang="en"
-      className={`h-full antialiased ${figtree.variable}`}
-    >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
-    </html>
-  );
+	return (
+		<html
+			lang="en"
+			data-scroll-behavior="smooth"
+			className={`h-full antialiased ${figtree.variable}`}
+		>
+			<body className="min-h-full flex flex-col font-sans">
+				{children}
+				<Toaster position="top-right" richColors />
+			</body>
+		</html>
+	);
 }

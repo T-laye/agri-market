@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { GiCheckMark } from "react-icons/gi";
 import Button from "@/components/ui/Button";
+import { pageRoutes } from "@/lib/routes";
 
 const checklist = [
 	"Sell or buy directly — no middlemen taking a cut",
@@ -27,6 +28,7 @@ export default function About() {
 						src="/images/home/about.jpg"
 						alt="Farmer planting a seedling"
 						fill
+						loading="eager"
 						sizes="(min-width: 768px) 50vw, 100vw"
 						quality={90}
 						className="object-cover"
@@ -71,7 +73,7 @@ export default function About() {
 						))}
 					</ul>
 
-					<Button href="/signup" variant="primary" className="w-fit mt-2">
+					<Button href={pageRoutes.auth.signup} variant="primary" className="w-fit mt-2">
 						Get Started
 					</Button>
 				</motion.div>

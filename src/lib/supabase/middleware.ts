@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { pageRoutes } from "@/lib/routes";
 
-const PROTECTED_PREFIXES = ["/dashboard"];
+const PROTECTED_PREFIXES = [pageRoutes.dashboard.index];
 
 export async function updateSession(request: NextRequest) {
 	let supabaseResponse = NextResponse.next({ request });
@@ -37,7 +38,7 @@ export async function updateSession(request: NextRequest) {
 
 	if (isProtected && !user) {
 		const url = request.nextUrl.clone();
-		url.pathname = "/login";
+		url.pathname = pageRoutes.auth.login;
 		url.searchParams.set("redirect", request.nextUrl.pathname);
 		return NextResponse.redirect(url);
 	}

@@ -1,6 +1,10 @@
 export const pageRoutes = {
 	home: "/",
 
+	marketplace: "/marketplace",
+	cart: "/cart",
+	checkout: "/checkout",
+
 	auth: {
 		login: "/auth/login",
 		signup: "/auth/signup",

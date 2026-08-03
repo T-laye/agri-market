@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { pageRoutes } from "@/lib/routes";
 
 export type AuthState = {
 	error: string | null;
@@ -70,7 +71,7 @@ export async function requestPasswordReset(
 	const email = formData.get("email") as string;
 
 	const { error } = await supabase.auth.resetPasswordForEmail(email, {
-		redirectTo: `${siteUrl()}/auth/callback?next=/reset-password`,
+		redirectTo: `${siteUrl()}/auth/callback?next=${pageRoutes.auth.resetPassword}`,
 	});
 
 	if (error) {
@@ -96,11 +97,11 @@ export async function updatePassword(
 		return { error: error.message };
 	}
 
-	redirect("/login?reset=success");
+	redirect(`${pageRoutes.auth.login}?reset=success`);
 }
 
 export async function signOut() {
 	const supabase = await createClient();
 	await supabase.auth.signOut();
-	redirect("/login");
+	redirect(pageRoutes.auth.login);
 }

@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import type { User } from "@supabase/supabase-js";
-import { HiOutlineLogout, HiChevronDown } from "react-icons/hi";
+import { HiOutlineLogout, HiChevronDown, HiOutlineUserCircle } from "react-icons/hi";
 import { signOut } from "@/app/auth/actions";
+import { pageRoutes } from "@/lib/routes";
 
 export default function UserMenu({
 	user,
@@ -26,6 +29,7 @@ export default function UserMenu({
 	}, []);
 
 	const name = (user.user_metadata?.name as string) || user.email || "Account";
+	const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
 	const initial = name.charAt(0).toUpperCase();
 
 	return (
@@ -37,8 +41,14 @@ export default function UserMenu({
 					scrolled ? "hover:bg-neutral-100" : "hover:bg-white/10"
 				}`}
 			>
-				<span className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary-500 text-white text-sm font-bold shrink-0">
-					{initial}
+				<span className="relative w-8 h-8 rounded-full overflow-hidden bg-secondary-500 shrink-0">
+					{avatarUrl ? (
+						<Image src={avatarUrl} alt={name} fill sizes="32px" className="object-cover" unoptimized />
+					) : (
+						<span className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
+							{initial}
+						</span>
+					)}
 				</span>
 				<span
 					className={`text-sm font-medium max-w-28 truncate ${
@@ -60,6 +70,14 @@ export default function UserMenu({
 						<p className="text-sm font-semibold text-neutral-500 truncate">{name}</p>
 						<p className="text-xs text-neutral-400 truncate">{user.email}</p>
 					</div>
+					<Link
+						href={pageRoutes.dashboard.profile}
+						onClick={() => setOpen(false)}
+						className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-500 hover:bg-neutral-100 duration-150"
+					>
+						<HiOutlineUserCircle className="text-base" />
+						My Profile
+					</Link>
 					<form action={signOut}>
 						<button
 							type="submit"

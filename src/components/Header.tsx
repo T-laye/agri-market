@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiMenu, HiX, HiOutlineLogout } from "react-icons/hi";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
@@ -20,7 +22,7 @@ const navLinks = [
 	{ label: "FAQ", href: "/#faq" },
 ];
 
-export default function Header() {
+export default function Header({ transparent = true }: { transparent?: boolean } = {}) {
 	const [scrolled, setScrolled] = useState(false);
 	const [open, setOpen] = useState(false);
 	const [cartOpen, setCartOpen] = useState(false);
@@ -28,25 +30,28 @@ export default function Header() {
 	const totalItems = useCartStore(selectTotalItems);
 	const { user, loading } = useUser();
 
+	const solid = !transparent || scrolled;
+
 	useEffect(() => {
 		setMounted(true);
+		if (!transparent) return;
 		const onScroll = () => setScrolled(window.scrollY > 20);
 		onScroll();
 		window.addEventListener("scroll", onScroll);
 		return () => window.removeEventListener("scroll", onScroll);
-	}, []);
+	}, [transparent]);
 
 	return (
 		<motion.header
 			className="fixed inset-x-0 top-0 z-50"
 			animate={{
-				backgroundColor: scrolled ? "rgba(255,255,255,1)" : "rgba(255,255,255,0)",
-				boxShadow: scrolled ? "0 1px 12px 0 rgba(0,0,0,0.08)" : "0 0 0 0 rgba(0,0,0,0)",
+				backgroundColor: solid ? "rgba(255,255,255,1)" : "rgba(255,255,255,0)",
+				boxShadow: solid ? "0 1px 12px 0 rgba(0,0,0,0.08)" : "0 0 0 0 rgba(0,0,0,0)",
 			}}
 			transition={{ duration: 0.25 }}
 		>
 			<div className="custom-container flex items-center justify-between h-18 md:h-22">
-				<Logo light={!scrolled} />
+				<Logo light={!solid} />
 
 				<nav className="hidden lg:flex items-center gap-8 xl:gap-10">
 					{navLinks.map((link) => (
@@ -54,7 +59,7 @@ export default function Header() {
 							key={link.href}
 							href={link.href}
 							className={`text-sm font-medium duration-150 hover:text-secondary-500 ${
-								scrolled ? "text-neutral-500" : "text-white"
+								solid ? "text-neutral-500" : "text-white"
 							}`}
 						>
 							{link.label}
@@ -67,7 +72,7 @@ export default function Header() {
 						aria-label="Open cart"
 						onClick={() => setCartOpen(true)}
 						className={`relative w-10 h-10 flex items-center justify-center rounded-full duration-150 ${
-							scrolled
+							solid
 								? "text-neutral-500 hover:bg-neutral-100"
 								: "text-white hover:bg-white/10"
 						}`}
@@ -83,12 +88,12 @@ export default function Header() {
 					<div className="hidden lg:flex items-center gap-4">
 						{!loading &&
 							(user ? (
-								<UserMenu user={user} scrolled={scrolled} />
+								<UserMenu user={user} scrolled={solid} />
 							) : (
 								<>
 									<Button
 										href={pageRoutes.auth.login}
-										variant={scrolled ? "primary" : "ghost"}
+										variant={solid ? "primary" : "ghost"}
 										className="min-w-0 px-6 py-2.5"
 									>
 										Login
@@ -107,7 +112,7 @@ export default function Header() {
 					<button
 						aria-label="Toggle menu"
 						onClick={() => setOpen(true)}
-						className={`lg:hidden text-3xl ${scrolled ? "text-primary" : "text-white"}`}
+						className={`lg:hidden text-3xl ${solid ? "text-primary" : "text-white"}`}
 					>
 						<HiMenu />
 					</button>
@@ -162,11 +167,28 @@ export default function Header() {
 								{!loading &&
 									(user ? (
 										<>
-											<div className="flex items-center gap-3 px-1 pb-2">
-												<span className="w-9 h-9 flex items-center justify-center rounded-full bg-secondary-500 text-white text-sm font-bold shrink-0">
-													{((user.user_metadata?.name as string) || user.email || "A")
-														.charAt(0)
-														.toUpperCase()}
+											<Link
+												href={pageRoutes.dashboard.profile}
+												onClick={() => setOpen(false)}
+												className="flex items-center gap-3 px-1 pb-2"
+											>
+												<span className="relative w-9 h-9 rounded-full overflow-hidden bg-secondary-500 shrink-0">
+													{user.user_metadata?.avatar_url ? (
+														<Image
+															src={user.user_metadata.avatar_url as string}
+															alt=""
+															fill
+															sizes="36px"
+															className="object-cover"
+															unoptimized
+														/>
+													) : (
+														<span className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
+															{((user.user_metadata?.name as string) || user.email || "A")
+																.charAt(0)
+																.toUpperCase()}
+														</span>
+													)}
 												</span>
 												<div className="min-w-0">
 													<p className="text-sm font-semibold text-neutral-500 truncate">
@@ -174,7 +196,7 @@ export default function Header() {
 													</p>
 													<p className="text-xs text-neutral-400 truncate">{user.email}</p>
 												</div>
-											</div>
+											</Link>
 											<form action={signOut}>
 												<button
 													type="submit"

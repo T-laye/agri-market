@@ -1,0 +1,35 @@
+import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { pageRoutes } from "@/lib/routes";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import ProfileForm from "@/components/dashboard/ProfileForm";
+
+export const metadata: Metadata = {
+	title: "My Profile | AgriMarket Nigeria",
+};
+
+export default async function ProfilePage() {
+	const supabase = await createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	if (!user) {
+		redirect(pageRoutes.auth.login);
+	}
+
+	const metadata = user.user_metadata ?? {};
+
+	return (
+		<DashboardLayout>
+			<ProfileForm
+				userId={user.id}
+				email={user.email ?? ""}
+				initialName={(metadata.name as string) ?? ""}
+				initialPhone={(metadata.phone as string) ?? ""}
+				initialAvatarUrl={(metadata.avatar_url as string) ?? ""}
+			/>
+		</DashboardLayout>
+	);
+}

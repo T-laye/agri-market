@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+:root {
+	--background: #ffffff;
+	--foreground: #111111;
+
+	/* Primary */
+	--primary-100: #d0dccc;
+	--primary-200: #a1b999;
+	--primary-300: #739566;
+	--primary-400: #447233;
+	--primary: #154f00;
+	--primary-600: #113f00;
+	--primary-700: #0d2f00;
+	--primary-800: #082000;
+	--primary-900: #061800;
+
+	/* Secondary */
+	--secondary-100: #d4ebcc;
+	--secondary-200: #a9d799;
+	--secondary-300: #7fc266;
+	--secondary-400: #54ae33;
+	--secondary-500: #299a00;
+	--secondary-600: #217b00;
+	--secondary-700: #195c00;
+	--secondary-800: #103e00;
+	--secondary-900: #0c2e00;
+
+	/* Accent */
+	--accent-100: #fffff4;
+	--accent-200: #ffffe9;
+	--accent-300: #ffffdf;
+	--accent-400: #ffffd4;
+	--accent-500: #ffffc9;
+	--accent-600: #cccca1;
+	--accent-700: #999979;
+	--accent-800: #666650;
+	--accent-900: #4d4d3c;
+
+	/* Neutral */
+	--neutral-100: #ffffff;
+	--neutral-200: #cfcfcf;
+	--neutral-300: #a0a0a0;
+	--neutral-400: #414141;
+	--neutral-500: #111111;
+	--neutral-600: #0e0e0e;
+	--neutral-700: #0a0a0a;
+	--neutral-800: #070707;
+	--neutral-900: #050505;
+}
+
+@theme inline {
+	/* Base */
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+
+	/* Font */
+	--font-sans: var(--font-figtree);
+
+	/* Primary scale */
+	--color-primary-100: var(--primary-100);
+	--color-primary-200: var(--primary-200);
+	--color-primary-300: var(--primary-300);
+	--color-primary-400: var(--primary-400);
+	--color-primary: var(--primary);
+	--color-primary-500: var(--primary);
+	--color-primary-600: var(--primary-600);
+	--color-primary-700: var(--primary-700);
+	--color-primary-800: var(--primary-800);
+	--color-primary-900: var(--primary-900);
+
+	/* Secondary scale */
+	--color-secondary-100: var(--secondary-100);
+	--color-secondary-200: var(--secondary-200);
+	--color-secondary-300: var(--secondary-300);
+	--color-secondary-400: var(--secondary-400);
+	--color-secondary-500: var(--secondary-500);
+	--color-secondary-600: var(--secondary-600);
+	--color-secondary-700: var(--secondary-700);
+	--color-secondary-800: var(--secondary-800);
+	--color-secondary-900: var(--secondary-900);
+
+	/* Accent scale */
+	--color-accent-100: var(--accent-100);
+	--color-accent-200: var(--accent-200);
+	--color-accent-300: var(--accent-300);
+	--color-accent-400: var(--accent-400);
+	--color-accent-500: var(--accent-500);
+	--color-accent-600: var(--accent-600);
+	--color-accent-700: var(--accent-700);
+	--color-accent-800: var(--accent-800);
+	--color-accent-900: var(--accent-900);
+
+	/* Neutral scale */
+	--color-neutral-100: var(--neutral-100);
+	--color-neutral-200: var(--neutral-200);
+	--color-neutral-300: var(--neutral-300);
+	--color-neutral-400: var(--neutral-400);
+	--color-neutral-500: var(--neutral-500);
+	--color-neutral-600: var(--neutral-600);
+	--color-neutral-700: var(--neutral-700);
+	--color-neutral-800: var(--neutral-800);
+	--color-neutral-900: var(--neutral-900);
+}
+
+html {
+	overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+body {
+	background: var(--background);
+	color: var(--foreground);
+}
+
+.custom-container {
+	@apply max-w-325 px-4 md:px-6 lg:px-8 mx-auto;
+}
+
+.h1 {
+	@apply font-bold text-2xl leading-10 lg:text-[56px] lg:leading-16;
+}
+
+.h2 {
+	@apply font-bold text-xl leading-6 lg:text-[48px] lg:leading-14;
+}
+
+.h3 {
+	@apply font-bold text-lg leading-4 lg:text-[40px] lg:leading-12;
+}
+.p1 {
+	@apply text-base leading-6 lg:text-xl lg:leading-7;
+}
+
+.p2 {
+	@apply text-sm leading-6 sm:text-base md:text-xl lg:leading-10 lg:text-2xl;
+}
+
+.p3 {
+	@apply text-xs leading-5;
+}
+
+.input-class,
+.select-class {
+	@apply bg-neutral-100 border border-neutral-200 rounded-[5px] h-10.75 md:h-15 w-full py-[9.5px] px-3.5 placeholder:text-neutral-200 focus:outline-none focus:border-primary-500 caret-primary-500 duration-150 placeholder:text-sm md:placeholder:text-base;
+}
+
+.textarea {
+	@apply bg-neutral-100 border border-neutral-200 rounded-[5px] h-30 md:h-65 md:placeholder:text-base w-full py-[9.5px] px-3.5 placeholder:text-neutral-200 focus:outline-none focus:border-primary-500 caret-primary-500 duration-150 placeholder:text-sm resize-none;
+}
+
+.service-card-overlay {
+	opacity: 0;
+	transform: translateX(-100%);
+}
+
+.service-card:hover .service-card-overlay {
+	opacity: 100;
+	transform: translateX(0);
+	transition: all 0.3s ease;
+}
+
+@keyframes float {
+	0% {
+		transform: translate(0px, 0px);
+	}
+	25% {
+		transform: translate(2px, -6px);
+	}
+	50% {
+		transform: translate(4px, -12px);
+	}
+	75% {
+		transform: translate(2px, -6px);
+	}
+	100% {
+		transform: translate(0px, 0px);
+	}
+}
+
+.animate-float {
+	animation: float 5s ease-in-out infinite;
+	will-change: transform;
+}

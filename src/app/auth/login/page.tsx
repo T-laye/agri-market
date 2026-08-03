@@ -28,7 +28,7 @@ export default async function LoginPage({
 				</p>
 			}
 		>
-			<LoginForm redirectTo={redirect || pageRoutes.home} />
+			<LoginForm redirectTo={redirect || pageRoutes.marketplace} />
 		</AuthLayout>
 	);
 }

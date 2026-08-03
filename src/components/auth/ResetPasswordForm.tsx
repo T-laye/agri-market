@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { updatePassword, type AuthState } from "@/app/auth/actions";
 import Button from "@/components/ui/Button";
+import PasswordInput from "@/components/auth/PasswordInput";
 
 const initialState: AuthState = { error: null };
 
@@ -19,27 +20,26 @@ export default function ResetPasswordForm() {
 				<label htmlFor="password" className="text-sm font-medium text-neutral-500">
 					New password
 				</label>
-				<input
+				<PasswordInput
 					id="password"
 					name="password"
-					type="password"
-					required
-					minLength={6}
 					placeholder="At least 6 characters"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
 					className="input-class"
 				/>
+				{state.fieldErrors?.password && (
+					<span className="text-xs text-red-600">{state.fieldErrors.password}</span>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-1.5">
-				<label htmlFor="confirm" className="text-sm font-medium text-neutral-500">
+				<label htmlFor="confirmPassword" className="text-sm font-medium text-neutral-500">
 					Confirm password
 				</label>
-				<input
-					id="confirm"
-					type="password"
-					required
+				<PasswordInput
+					id="confirmPassword"
+					name="confirmPassword"
 					placeholder="Re-enter password"
 					value={confirm}
 					onChange={(e) => setConfirm(e.target.value)}
@@ -47,6 +47,9 @@ export default function ResetPasswordForm() {
 				/>
 				{mismatch && (
 					<span className="text-xs text-red-600">Passwords do not match</span>
+				)}
+				{!mismatch && state.fieldErrors?.confirmPassword && (
+					<span className="text-xs text-red-600">{state.fieldErrors.confirmPassword}</span>
 				)}
 			</div>
 

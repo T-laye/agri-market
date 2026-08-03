@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { signup, type AuthState } from "@/app/auth/actions";
 import Button from "@/components/ui/Button";
+import PasswordInput from "@/components/auth/PasswordInput";
 
 const initialState: AuthState = { error: null };
 
@@ -50,6 +51,9 @@ export default function SignupForm({ defaultRole }: { defaultRole: Role }) {
 						Buyer
 					</button>
 				</div>
+				{state.fieldErrors?.role && (
+					<span className="text-xs text-red-600">{state.fieldErrors.role}</span>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-1.5">
@@ -60,10 +64,12 @@ export default function SignupForm({ defaultRole }: { defaultRole: Role }) {
 					id="name"
 					name="name"
 					type="text"
-					required
 					placeholder="Ada Okafor"
 					className="input-class"
 				/>
+				{state.fieldErrors?.name && (
+					<span className="text-xs text-red-600">{state.fieldErrors.name}</span>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-1.5">
@@ -74,25 +80,27 @@ export default function SignupForm({ defaultRole }: { defaultRole: Role }) {
 					id="email"
 					name="email"
 					type="email"
-					required
 					placeholder="you@example.com"
 					className="input-class"
 				/>
+				{state.fieldErrors?.email && (
+					<span className="text-xs text-red-600">{state.fieldErrors.email}</span>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-1.5">
 				<label htmlFor="password" className="text-sm font-medium text-neutral-500">
 					Password
 				</label>
-				<input
+				<PasswordInput
 					id="password"
 					name="password"
-					type="password"
-					required
-					minLength={6}
 					placeholder="At least 6 characters"
 					className="input-class"
 				/>
+				{state.fieldErrors?.password && (
+					<span className="text-xs text-red-600">{state.fieldErrors.password}</span>
+				)}
 			</div>
 
 			{state.error && <p className="text-sm text-red-600">{state.error}</p>}

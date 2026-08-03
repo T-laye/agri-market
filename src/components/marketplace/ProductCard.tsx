@@ -15,16 +15,26 @@ function formatNaira(amount: number) {
 	}).format(amount);
 }
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({
+	product,
+	onSelect,
+}: {
+	product: Product;
+	onSelect?: (product: Product) => void;
+}) {
 	const addItem = useCartStore((state) => state.addItem);
 
-	function handleAddToCart() {
+	function handleAddToCart(e: React.MouseEvent) {
+		e.stopPropagation();
 		addItem(product);
 		toast.success(`${product.name} added to cart`);
 	}
 
 	return (
-		<div className="flex flex-col rounded-[15px] overflow-hidden border border-neutral-200 bg-white group">
+		<div
+			onClick={() => onSelect?.(product)}
+			className="flex flex-col rounded-[15px] overflow-hidden border border-neutral-200 bg-white group cursor-pointer"
+		>
 			<div className="relative aspect-4/3 overflow-hidden">
 				<Image
 					src={product.image}

@@ -11,10 +11,12 @@ export type Product = {
 	price: number;
 	unit: string;
 	location: string;
+	address: string;
 	farmerName: string;
 	farmerVerified: boolean;
 	rating: number;
 	image: string;
+	images: string[];
 	description: string;
 };
 
@@ -48,10 +50,12 @@ export const products: Product[] = [
 		price: 8500,
 		unit: "per basket",
 		location: "Ogun",
+		address: "Along Ilaro-Owode Road, Yewa South LGA, Ogun State",
 		farmerName: "Adebayo Farms",
 		farmerVerified: true,
 		rating: 4.8,
 		image: "/images/products/tomatoes-vine.jpg",
+		images: ["/images/products/tomatoes-vine.jpg", "/images/products/mixed-vegetables.jpg"],
 		description: "Juicy, vine-ripened tomatoes harvested fresh this week.",
 	},
 	{
@@ -61,10 +65,12 @@ export const products: Product[] = [
 		price: 7200,
 		unit: "per basket",
 		location: "Kano",
+		address: "Dawanau Market Road, Dawakin Tofa LGA, Kano State",
 		farmerName: "Sani Produce Co-op",
 		farmerVerified: true,
 		rating: 4.6,
 		image: "/images/products/tomatoes-studio.jpg",
+		images: ["/images/products/tomatoes-studio.jpg", "/images/products/mixed-vegetables.jpg"],
 		description: "Firm Roma tomatoes, ideal for stews and sauces.",
 	},
 	{
@@ -74,10 +80,12 @@ export const products: Product[] = [
 		price: 6000,
 		unit: "per basket",
 		location: "Kaduna",
+		address: "Kachia Road, Kajuru LGA, Kaduna State",
 		farmerName: "Yakubu Greenhouse",
 		farmerVerified: true,
 		rating: 4.7,
 		image: "/images/products/bell-peppers.jpg",
+		images: ["/images/products/bell-peppers.jpg", "/images/products/mixed-vegetables.jpg"],
 		description: "Sweet, colourful bell peppers grown under greenhouse care.",
 	},
 	{
@@ -87,10 +95,12 @@ export const products: Product[] = [
 		price: 15000,
 		unit: "per bag (50kg)",
 		location: "Sokoto",
+		address: "Wamakko-Gwadabawa Road, Wamakko LGA, Sokoto State",
 		farmerName: "Sokoto Onion Farmers Union",
 		farmerVerified: true,
 		rating: 4.9,
 		image: "/images/products/red-onions.jpg",
+		images: ["/images/products/red-onions.jpg", "/images/products/mixed-vegetables.jpg"],
 		description: "Premium red onions from Nigeria's onion belt.",
 	},
 	{
@@ -100,10 +110,12 @@ export const products: Product[] = [
 		price: 13500,
 		unit: "per bag (50kg)",
 		location: "Kano",
+		address: "Hadejia Road, Bichi LGA, Kano State",
 		farmerName: "Dantata Agro",
 		farmerVerified: false,
 		rating: 4.3,
 		image: "/images/products/yellow-onions.jpg",
+		images: ["/images/products/yellow-onions.jpg", "/images/products/mixed-vegetables.jpg"],
 		description: "Well-cured yellow onions with a long shelf life.",
 	},
 	{
@@ -113,10 +125,12 @@ export const products: Product[] = [
 		price: 4500,
 		unit: "per basket",
 		location: "Plateau",
+		address: "Bukuru-Vom Road, Jos South LGA, Plateau State",
 		farmerName: "Jos Highland Farms",
 		farmerVerified: true,
 		rating: 4.5,
 		image: "/images/products/carrots.jpg",
+		images: ["/images/products/carrots.jpg", "/images/products/mixed-vegetables.jpg"],
 		description: "Crisp, sweet carrots grown in Plateau's cool highlands.",
 	},
 	{
@@ -126,10 +140,12 @@ export const products: Product[] = [
 		price: 3800,
 		unit: "per kg",
 		location: "Plateau",
+		address: "Mangu-Pankshin Road, Mangu LGA, Plateau State",
 		farmerName: "Mangu Vegetable Farms",
 		farmerVerified: true,
 		rating: 4.4,
 		image: "/images/products/broccoli.jpg",
+		images: ["/images/products/broccoli.jpg", "/images/products/mixed-vegetables.jpg"],
 		description: "Tender broccoli heads, harvested and packed same-day.",
 	},
 	{
@@ -139,10 +155,12 @@ export const products: Product[] = [
 		price: 22000,
 		unit: "per bag (100kg)",
 		location: "Plateau",
+		address: "Vom Road, Jos South LGA, Plateau State",
 		farmerName: "Vom Potato Farmers",
 		farmerVerified: true,
 		rating: 4.7,
 		image: "/images/products/potatoes.jpg",
+		images: ["/images/products/potatoes.jpg", "/images/products/market-stall.jpg"],
 		description: "Farm-fresh Irish potatoes, great for chips and roasting.",
 	},
 	{
@@ -152,10 +170,12 @@ export const products: Product[] = [
 		price: 5500,
 		unit: "per basket",
 		location: "Benue",
+		address: "Otukpo-Adoka Road, Otukpo LGA, Benue State",
 		farmerName: "Otukpo Fruit Growers",
 		farmerVerified: true,
 		rating: 4.6,
 		image: "/images/products/oranges.jpg",
+		images: ["/images/products/oranges.jpg", "/images/products/mixed-fruits.jpg"],
 		description: "Sweet, juicy oranges fresh off the tree.",
 	},
 	{
@@ -165,10 +185,12 @@ export const products: Product[] = [
 		price: 1200,
 		unit: "per piece",
 		location: "Osun",
+		address: "Ede-Ejigbo Road, Ede North LGA, Osun State",
 		farmerName: "Ede Pineapple Farms",
 		farmerVerified: true,
 		rating: 4.8,
 		image: "/images/products/pineapple.jpg",
+		images: ["/images/products/pineapple.jpg", "/images/products/mixed-fruits.jpg"],
 		description: "Golden, syrup-sweet pineapples grown in Osun State.",
 	},
 	{
@@ -178,10 +200,12 @@ export const products: Product[] = [
 		price: 1500,
 		unit: "per piece",
 		location: "Delta",
+		address: "Ughelli-Patani Road, Ughelli South LGA, Delta State",
 		farmerName: "Ughelli Fruit Farms",
 		farmerVerified: false,
 		rating: 4.2,
 		image: "/images/products/papaya.jpg",
+		images: ["/images/products/papaya.jpg", "/images/products/mixed-fruits.jpg"],
 		description: "Sweet, ripe pawpaw ready to eat.",
 	},
 	{
@@ -191,10 +215,12 @@ export const products: Product[] = [
 		price: 2500,
 		unit: "per piece",
 		location: "Kano",
+		address: "Fagge Local Market Road, Fagge LGA, Kano State",
 		farmerName: "Fagge Melon Farms",
 		farmerVerified: true,
 		rating: 4.5,
 		image: "/images/products/watermelon.jpg",
+		images: ["/images/products/watermelon.jpg", "/images/products/mixed-fruits.jpg"],
 		description: "Crisp, refreshing watermelons, perfect for the season.",
 	},
 	{
@@ -204,10 +230,12 @@ export const products: Product[] = [
 		price: 3500,
 		unit: "per bunch",
 		location: "Ondo",
+		address: "Akure-Owo Road, Akure South LGA, Ondo State",
 		farmerName: "Akure Plantain Growers",
 		farmerVerified: true,
 		rating: 4.9,
 		image: "/images/products/bananas.jpg",
+		images: ["/images/products/bananas.jpg", "/images/products/mixed-fruits.jpg"],
 		description: "Sweet ripe plantain, freshly cut and ready for delivery.",
 	},
 	{
@@ -217,10 +245,12 @@ export const products: Product[] = [
 		price: 4000,
 		unit: "per basket",
 		location: "Ogun",
+		address: "Ijebu-Ode Ring Road, Ijebu Ode LGA, Ogun State",
 		farmerName: "Ijebu Mango Farms",
 		farmerVerified: true,
 		rating: 4.7,
 		image: "/images/home/feature-produce.jpg",
+		images: ["/images/home/feature-produce.jpg", "/images/products/mixed-fruits.jpg"],
 		description: "Sweet, fragrant mangoes picked at peak ripeness.",
 	},
 	{
@@ -230,10 +260,12 @@ export const products: Product[] = [
 		price: 9500,
 		unit: "per basket",
 		location: "Oyo",
+		address: "Bodija Market Road, Ibadan North LGA, Oyo State",
 		farmerName: "Ibadan Farmers Co-op",
 		farmerVerified: true,
 		rating: 4.6,
 		image: "/images/products/mixed-vegetables.jpg",
+		images: ["/images/products/mixed-vegetables.jpg", "/images/products/market-stall.jpg"],
 		description: "A curated basket of seasonal vegetables for the week.",
 	},
 	{
@@ -243,10 +275,12 @@ export const products: Product[] = [
 		price: 8000,
 		unit: "per basket",
 		location: "Cross River",
+		address: "Marian Market Road, Calabar Municipal LGA, Cross River State",
 		farmerName: "Calabar Fruit Growers",
 		farmerVerified: false,
 		rating: 4.3,
 		image: "/images/products/mixed-fruits.jpg",
+		images: ["/images/products/mixed-fruits.jpg", "/images/products/market-stall.jpg"],
 		description: "A colourful mix of seasonal fruits, hand-picked.",
 	},
 	{
@@ -256,10 +290,12 @@ export const products: Product[] = [
 		price: 18000,
 		unit: "per crate",
 		location: "Lagos",
+		address: "Epe-Ijebu Road, Epe LGA, Lagos State",
 		farmerName: "Epe Farmers Market",
 		farmerVerified: true,
 		rating: 4.5,
 		image: "/images/products/market-stall.jpg",
+		images: ["/images/products/market-stall.jpg", "/images/products/mixed-vegetables.jpg"],
 		description: "A generous crate of assorted fresh produce for bulk buyers.",
 	},
 ];

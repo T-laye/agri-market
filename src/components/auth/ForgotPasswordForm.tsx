@@ -30,10 +30,12 @@ export default function ForgotPasswordForm() {
 					id="email"
 					name="email"
 					type="email"
-					required
 					placeholder="you@example.com"
 					className="input-class"
 				/>
+				{state.fieldErrors?.email && (
+					<span className="text-xs text-red-600">{state.fieldErrors.email}</span>
+				)}
 			</div>
 
 			{state.error && <p className="text-sm text-red-600">{state.error}</p>}

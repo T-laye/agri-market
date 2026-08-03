@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { login, type AuthState } from "@/app/auth/actions";
 import Button from "@/components/ui/Button";
+import PasswordInput from "@/components/auth/PasswordInput";
 import { pageRoutes } from "@/lib/routes";
 
 const initialState: AuthState = { error: null };
@@ -23,10 +24,12 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
 					id="email"
 					name="email"
 					type="email"
-					required
 					placeholder="you@example.com"
 					className="input-class"
 				/>
+				{state.fieldErrors?.email && (
+					<span className="text-xs text-red-600">{state.fieldErrors.email}</span>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-1.5">
@@ -38,14 +41,15 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
 						Forgot password?
 					</Link>
 				</div>
-				<input
+				<PasswordInput
 					id="password"
 					name="password"
-					type="password"
-					required
 					placeholder="••••••••"
 					className="input-class"
 				/>
+				{state.fieldErrors?.password && (
+					<span className="text-xs text-red-600">{state.fieldErrors.password}</span>
+				)}
 			</div>
 
 			{state.error && <p className="text-sm text-red-600">{state.error}</p>}

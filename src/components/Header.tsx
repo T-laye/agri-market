@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { HiMenu, HiX } from "react-icons/hi";
+import { HiMenu, HiX, HiOutlineLogout } from "react-icons/hi";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 import Logo from "./Logo";
 import Button from "./ui/Button";
 import CartDrawer from "./marketplace/CartDrawer";
+import UserMenu from "./UserMenu";
 import { useCartStore, selectTotalItems } from "@/store/cart";
+import { useUser } from "@/hooks/useUser";
+import { signOut } from "@/app/auth/actions";
 import { pageRoutes } from "@/lib/routes";
 
 const navLinks = [
@@ -23,6 +26,7 @@ export default function Header() {
 	const [cartOpen, setCartOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
 	const totalItems = useCartStore(selectTotalItems);
+	const { user, loading } = useUser();
 
 	useEffect(() => {
 		setMounted(true);
@@ -77,20 +81,27 @@ export default function Header() {
 					</button>
 
 					<div className="hidden lg:flex items-center gap-4">
-						<Button
-							href={pageRoutes.auth.login}
-							variant={scrolled ? "primary" : "ghost"}
-							className="min-w-0 px-6 py-2.5"
-						>
-							Login
-						</Button>
-						<Button
-							href={pageRoutes.auth.signup}
-							variant="secondary"
-							className="min-w-0 px-6 py-2.5"
-						>
-							Get Started
-						</Button>
+						{!loading &&
+							(user ? (
+								<UserMenu user={user} scrolled={scrolled} />
+							) : (
+								<>
+									<Button
+										href={pageRoutes.auth.login}
+										variant={scrolled ? "primary" : "ghost"}
+										className="min-w-0 px-6 py-2.5"
+									>
+										Login
+									</Button>
+									<Button
+										href={pageRoutes.auth.signup}
+										variant="secondary"
+										className="min-w-0 px-6 py-2.5"
+									>
+										Get Started
+									</Button>
+								</>
+							))}
 					</div>
 
 					<button
@@ -148,12 +159,42 @@ export default function Header() {
 							</nav>
 
 							<div className="mt-auto flex flex-col gap-3">
-								<Button href={pageRoutes.auth.login} variant="primary" className="w-full">
-									Login
-								</Button>
-								<Button href={pageRoutes.auth.signup} variant="secondary" className="w-full">
-									Get Started
-								</Button>
+								{!loading &&
+									(user ? (
+										<>
+											<div className="flex items-center gap-3 px-1 pb-2">
+												<span className="w-9 h-9 flex items-center justify-center rounded-full bg-secondary-500 text-white text-sm font-bold shrink-0">
+													{((user.user_metadata?.name as string) || user.email || "A")
+														.charAt(0)
+														.toUpperCase()}
+												</span>
+												<div className="min-w-0">
+													<p className="text-sm font-semibold text-neutral-500 truncate">
+														{(user.user_metadata?.name as string) || "Account"}
+													</p>
+													<p className="text-xs text-neutral-400 truncate">{user.email}</p>
+												</div>
+											</div>
+											<form action={signOut}>
+												<button
+													type="submit"
+													className="w-full flex items-center justify-center gap-2 rounded-[30px] px-8 py-3.5 text-sm font-semibold border-2 border-red-500 text-red-500 hover:bg-red-50 duration-150"
+												>
+													<HiOutlineLogout />
+													Sign Out
+												</button>
+											</form>
+										</>
+									) : (
+										<>
+											<Button href={pageRoutes.auth.login} variant="primary" className="w-full">
+												Login
+											</Button>
+											<Button href={pageRoutes.auth.signup} variant="secondary" className="w-full">
+												Get Started
+											</Button>
+										</>
+									))}
 							</div>
 						</motion.div>
 					</>

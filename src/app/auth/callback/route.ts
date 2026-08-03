@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { pageRoutes } from "@/lib/routes";
 
 export async function GET(request: Request) {
 	const { searchParams, origin } = new URL(request.url);
 	const code = searchParams.get("code");
-	const next = searchParams.get("next") ?? "/";
+	const next = searchParams.get("next") ?? pageRoutes.marketplace;
 
 	if (code) {
 		const supabase = await createClient();
@@ -14,5 +15,5 @@ export async function GET(request: Request) {
 		}
 	}
 
-	return NextResponse.redirect(`${origin}/login?error=auth-callback-failed`);
+	return NextResponse.redirect(`${origin}${pageRoutes.auth.login}?error=auth-callback-failed`);
 }

@@ -3,9 +3,18 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { pageRoutes } from "@/lib/routes";
+import {
+	loginSchema,
+	signupSchema,
+	forgotPasswordSchema,
+	resetPasswordSchema,
+	flattenZodErrors,
+	type FieldErrors,
+} from "@/lib/validations/auth";
 
 export type AuthState = {
 	error: string | null;
+	fieldErrors?: FieldErrors;
 	success?: string | null;
 };
 
@@ -15,15 +24,21 @@ function siteUrl() {
 
 export async function login(
 	_prevState: AuthState,
-	formData: FormData
+	formData: FormData,
 ): Promise<AuthState> {
+	const parsed = loginSchema.safeParse({
+		email: formData.get("email"),
+		password: formData.get("password"),
+	});
+
+	if (!parsed.success) {
+		return { error: "Please fix the errors below", fieldErrors: flattenZodErrors(parsed.error) };
+	}
+
+	const redirectTo = (formData.get("redirectTo") as string) || pageRoutes.marketplace;
+
 	const supabase = await createClient();
-
-	const email = formData.get("email") as string;
-	const password = formData.get("password") as string;
-	const redirectTo = (formData.get("redirectTo") as string) || "/";
-
-	const { error } = await supabase.auth.signInWithPassword({ email, password });
+	const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
 	if (error) {
 		return { error: error.message };
@@ -34,21 +49,28 @@ export async function login(
 
 export async function signup(
 	_prevState: AuthState,
-	formData: FormData
+	formData: FormData,
 ): Promise<AuthState> {
+	const parsed = signupSchema.safeParse({
+		name: formData.get("name"),
+		email: formData.get("email"),
+		password: formData.get("password"),
+		role: formData.get("role"),
+	});
+
+	if (!parsed.success) {
+		return { error: "Please fix the errors below", fieldErrors: flattenZodErrors(parsed.error) };
+	}
+
+	const { name, email, password, role } = parsed.data;
+
 	const supabase = await createClient();
-
-	const name = formData.get("name") as string;
-	const email = formData.get("email") as string;
-	const password = formData.get("password") as string;
-	const role = formData.get("role") as string;
-
 	const { error } = await supabase.auth.signUp({
 		email,
 		password,
 		options: {
 			data: { name, role },
-			emailRedirectTo: `${siteUrl()}/auth/callback`,
+			emailRedirectTo: `${siteUrl()}/auth/callback?next=${pageRoutes.marketplace}`,
 		},
 	});
 
@@ -65,12 +87,18 @@ export async function signup(
 
 export async function requestPasswordReset(
 	_prevState: AuthState,
-	formData: FormData
+	formData: FormData,
 ): Promise<AuthState> {
-	const supabase = await createClient();
-	const email = formData.get("email") as string;
+	const parsed = forgotPasswordSchema.safeParse({
+		email: formData.get("email"),
+	});
 
-	const { error } = await supabase.auth.resetPasswordForEmail(email, {
+	if (!parsed.success) {
+		return { error: "Please fix the errors below", fieldErrors: flattenZodErrors(parsed.error) };
+	}
+
+	const supabase = await createClient();
+	const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
 		redirectTo: `${siteUrl()}/auth/callback?next=${pageRoutes.auth.resetPassword}`,
 	});
 
@@ -86,12 +114,19 @@ export async function requestPasswordReset(
 
 export async function updatePassword(
 	_prevState: AuthState,
-	formData: FormData
+	formData: FormData,
 ): Promise<AuthState> {
-	const supabase = await createClient();
-	const password = formData.get("password") as string;
+	const parsed = resetPasswordSchema.safeParse({
+		password: formData.get("password"),
+		confirmPassword: formData.get("confirmPassword"),
+	});
 
-	const { error } = await supabase.auth.updateUser({ password });
+	if (!parsed.success) {
+		return { error: "Please fix the errors below", fieldErrors: flattenZodErrors(parsed.error) };
+	}
+
+	const supabase = await createClient();
+	const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
 
 	if (error) {
 		return { error: error.message };

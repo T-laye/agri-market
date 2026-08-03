@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { HiOutlineSearch, HiOutlineX } from "react-icons/hi";
+import {
+	HiOutlineSearch,
+	HiOutlineX,
+	HiOutlineLocationMarker,
+	HiOutlineSwitchVertical,
+} from "react-icons/hi";
 import { motion } from "framer-motion";
 import {
 	categories,
@@ -68,8 +73,8 @@ export default function MarketplaceView() {
 	return (
 		<div className="flex flex-col gap-6">
 			<div className="flex flex-col md:flex-row gap-3 md:items-center">
-				<div className="relative flex-1">
-					<HiOutlineSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-lg" />
+				<div className="relative flex-1 min-w-0">
+					<HiOutlineSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-lg pointer-events-none" />
 					<input
 						type="text"
 						value={search}
@@ -79,30 +84,36 @@ export default function MarketplaceView() {
 					/>
 				</div>
 
-				<select
-					value={location}
-					onChange={(e) => setLocation(e.target.value)}
-					className="select-class w-full md:w-48"
-				>
-					<option value="All">All Locations</option>
-					{locations.map((loc) => (
-						<option key={loc} value={loc}>
-							{loc} State
-						</option>
-					))}
-				</select>
+				<div className="relative w-full md:w-46 lg:w-52 shrink-0">
+					<HiOutlineLocationMarker className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-lg pointer-events-none" />
+					<select
+						value={location}
+						onChange={(e) => setLocation(e.target.value)}
+						className="select-class pl-10.5"
+					>
+						<option value="All">All Locations</option>
+						{locations.map((loc) => (
+							<option key={loc} value={loc}>
+								{loc} State
+							</option>
+						))}
+					</select>
+				</div>
 
-				<select
-					value={sort}
-					onChange={(e) => setSort(e.target.value as SortOption)}
-					className="select-class w-full md:w-56"
-				>
-					{sortOptions.map((opt) => (
-						<option key={opt.value} value={opt.value}>
-							{opt.label}
-						</option>
-					))}
-				</select>
+				<div className="relative w-full md:w-52 lg:w-56 shrink-0">
+					<HiOutlineSwitchVertical className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-lg pointer-events-none" />
+					<select
+						value={sort}
+						onChange={(e) => setSort(e.target.value as SortOption)}
+						className="select-class pl-10.5"
+					>
+						{sortOptions.map((opt) => (
+							<option key={opt.value} value={opt.value}>
+								{opt.label}
+							</option>
+						))}
+					</select>
+				</div>
 			</div>
 
 			<div className="flex items-center gap-2 flex-wrap">

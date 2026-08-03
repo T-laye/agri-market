@@ -44,7 +44,7 @@ export default function Header() {
 			<div className="custom-container flex items-center justify-between h-18 md:h-22">
 				<Logo light={!scrolled} />
 
-				<nav className="hidden md:flex items-center gap-10">
+				<nav className="hidden lg:flex items-center gap-8 xl:gap-10">
 					{navLinks.map((link) => (
 						<a
 							key={link.href}
@@ -76,7 +76,7 @@ export default function Header() {
 						)}
 					</button>
 
-					<div className="hidden md:flex items-center gap-4">
+					<div className="hidden lg:flex items-center gap-4">
 						<Button
 							href={pageRoutes.auth.login}
 							variant={scrolled ? "primary" : "ghost"}
@@ -96,7 +96,7 @@ export default function Header() {
 					<button
 						aria-label="Toggle menu"
 						onClick={() => setOpen(true)}
-						className={`md:hidden text-3xl ${scrolled ? "text-primary" : "text-white"}`}
+						className={`lg:hidden text-3xl ${scrolled ? "text-primary" : "text-white"}`}
 					>
 						<HiMenu />
 					</button>
@@ -107,14 +107,14 @@ export default function Header() {
 				{open && (
 					<>
 						<motion.div
-							className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
+							className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							onClick={() => setOpen(false)}
 						/>
 						<motion.div
-							className="fixed top-0 right-0 h-full w-[75vw] max-w-xs bg-white z-50 shadow-2xl md:hidden flex flex-col p-6 gap-8"
+							className="fixed top-0 right-0 h-full w-[75vw] max-w-xs bg-white z-50 shadow-2xl lg:hidden flex flex-col p-6 gap-8"
 							initial={{ x: "100%" }}
 							animate={{ x: 0 }}
 							exit={{ x: "100%" }}

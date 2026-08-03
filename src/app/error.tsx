@@ -36,7 +36,7 @@ export default function Error({
 				<Button
 					href={pageRoutes.home}
 					variant="ghost"
-					className="!text-primary !border-primary hover:!bg-primary-100"
+					className="text-primary! border-primary! hover:bg-primary-100!"
 				>
 					Back to Home
 				</Button>

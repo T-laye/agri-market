@@ -197,6 +197,23 @@ export default function Header({ transparent = true }: { transparent?: boolean }
 													<p className="text-xs text-neutral-400 truncate">{user.email}</p>
 												</div>
 											</Link>
+											<Link
+												href={
+													user.user_metadata?.is_farmer
+														? pageRoutes.dashboard.verification
+														: pageRoutes.becomeFarmer
+												}
+												onClick={() => setOpen(false)}
+												className={`w-full flex items-center justify-center gap-2 rounded-[30px] px-8 py-3.5 text-sm font-semibold border-2 duration-150 ${
+													user.user_metadata?.is_farmer
+														? "border-neutral-200 text-neutral-500 hover:border-primary hover:text-primary"
+														: "border-primary text-primary hover:bg-primary-100"
+												}`}
+											>
+												{user.user_metadata?.is_farmer
+													? "Verification"
+													: "Become a Farmer"}
+											</Link>
 											<form action={signOut}>
 												<button
 													type="submit"

@@ -34,6 +34,7 @@ export default function ProductModal({
 	const addItem = useCartStore((state) => state.addItem);
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setActiveImage(0);
 	}, [product]);
 
@@ -101,7 +102,7 @@ export default function ProductModal({
 											<button
 												key={img + i}
 												onClick={() => setActiveImage(i)}
-												className={`relative w-16 h-16 rounded-[8px] overflow-hidden border-2 shrink-0 duration-150 ${
+												className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 shrink-0 duration-150 ${
 													activeImage === i
 														? "border-primary"
 														: "border-transparent opacity-70 hover:opacity-100"

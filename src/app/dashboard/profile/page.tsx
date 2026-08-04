@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { getFarmerProfile } from "@/lib/data/farmer";
 import { pageRoutes } from "@/lib/routes";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ProfileForm from "@/components/dashboard/ProfileForm";
@@ -20,9 +21,11 @@ export default async function ProfilePage() {
 	}
 
 	const metadata = user.user_metadata ?? {};
+	const isFarmer = Boolean(metadata.is_farmer);
+	const farmerProfile = isFarmer ? await getFarmerProfile(supabase, user.id) : null;
 
 	return (
-		<DashboardLayout>
+		<DashboardLayout isFarmer={isFarmer} kycStatus={farmerProfile?.kyc_status}>
 			<ProfileForm
 				userId={user.id}
 				email={user.email ?? ""}

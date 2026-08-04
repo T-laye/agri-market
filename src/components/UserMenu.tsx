@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { User } from "@supabase/supabase-js";
-import { HiOutlineLogout, HiChevronDown, HiOutlineUserCircle } from "react-icons/hi";
+import {
+	HiOutlineLogout,
+	HiChevronDown,
+	HiOutlineUserCircle,
+	HiOutlineSparkles,
+	HiOutlineBadgeCheck,
+} from "react-icons/hi";
 import { signOut } from "@/app/auth/actions";
 import { pageRoutes } from "@/lib/routes";
 
@@ -30,6 +36,7 @@ export default function UserMenu({
 
 	const name = (user.user_metadata?.name as string) || user.email || "Account";
 	const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+	const isFarmer = Boolean(user.user_metadata?.is_farmer);
 	const initial = name.charAt(0).toUpperCase();
 
 	return (
@@ -78,6 +85,25 @@ export default function UserMenu({
 						<HiOutlineUserCircle className="text-base" />
 						My Profile
 					</Link>
+					{isFarmer ? (
+						<Link
+							href={pageRoutes.dashboard.verification}
+							onClick={() => setOpen(false)}
+							className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-500 hover:bg-neutral-100 duration-150"
+						>
+							<HiOutlineBadgeCheck className="text-base" />
+							Verification
+						</Link>
+					) : (
+						<Link
+							href={pageRoutes.becomeFarmer}
+							onClick={() => setOpen(false)}
+							className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-primary hover:bg-primary-100 duration-150"
+						>
+							<HiOutlineSparkles className="text-base" />
+							Become a Farmer
+						</Link>
+					)}
 					<form action={signOut}>
 						<button
 							type="submit"

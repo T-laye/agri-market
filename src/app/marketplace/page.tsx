@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MarketplaceView from "@/components/marketplace/MarketplaceView";
+import { createClient } from "@/lib/supabase/server";
+import { getMarketplaceProducts } from "@/lib/data/products";
 
 export const metadata: Metadata = {
 	title: "Marketplace | AgriMarket Nigeria",
@@ -9,7 +11,10 @@ export const metadata: Metadata = {
 		"Browse fresh produce from verified Nigerian farmers. Search and filter by category, location, and price — no account needed to browse.",
 };
 
-export default function MarketplacePage() {
+export default async function MarketplacePage() {
+	const supabase = await createClient();
+	const products = await getMarketplaceProducts(supabase);
+
 	return (
 		<>
 			<Header />
@@ -25,7 +30,7 @@ export default function MarketplacePage() {
 				</div>
 
 				<div className="custom-container py-10 md:py-14">
-					<MarketplaceView />
+					<MarketplaceView products={products} />
 				</div>
 			</main>
 			<Footer />

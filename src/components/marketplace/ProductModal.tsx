@@ -130,10 +130,12 @@ export default function ProductModal({
 									<h2 className="font-bold text-2xl md:text-3xl text-neutral-500">
 										{product.name}
 									</h2>
-									<span className="flex items-center gap-1 text-sm font-semibold text-secondary-700 shrink-0 mt-1">
-										<HiStar className="text-secondary-500" />
-										{product.rating.toFixed(1)}
-									</span>
+									{typeof product.rating === "number" && (
+										<span className="flex items-center gap-1 text-sm font-semibold text-secondary-700 shrink-0 mt-1">
+											<HiStar className="text-secondary-500" />
+											{product.rating.toFixed(1)}
+										</span>
+									)}
 								</div>
 
 								<p className="text-sm text-neutral-400 leading-6">

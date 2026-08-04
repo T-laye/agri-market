@@ -32,6 +32,10 @@ export default async function ProfilePage() {
 				initialName={(metadata.name as string) ?? ""}
 				initialPhone={(metadata.phone as string) ?? ""}
 				initialAvatarUrl={(metadata.avatar_url as string) ?? ""}
+				initialAddressState={(metadata.state as string) ?? ""}
+				initialCity={(metadata.city as string) ?? ""}
+				initialAddress={(metadata.address as string) ?? ""}
+				initialLandmark={(metadata.landmark as string) ?? ""}
 			/>
 		</DashboardLayout>
 	);

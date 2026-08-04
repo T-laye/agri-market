@@ -30,19 +30,27 @@ export async function updateProfile(
 		name: formData.get("name"),
 		phone: formData.get("phone") ?? "",
 		avatarUrl: formData.get("avatarUrl") ?? "",
+		state: formData.get("state") ?? "",
+		city: formData.get("city") ?? "",
+		address: formData.get("address") ?? "",
+		landmark: formData.get("landmark") ?? "",
 	});
 
 	if (!parsed.success) {
 		return { error: "Please fix the errors below", fieldErrors: flattenZodErrors(parsed.error) };
 	}
 
-	const { name, phone, avatarUrl } = parsed.data;
+	const { name, phone, avatarUrl, state, city, address, landmark } = parsed.data;
 
 	const { error } = await supabase.auth.updateUser({
 		data: {
 			...user.user_metadata,
 			name,
 			phone: phone || null,
+			state: state || null,
+			city: city || null,
+			address: address || null,
+			landmark: landmark || null,
 			...(avatarUrl ? { avatar_url: avatarUrl } : {}),
 		},
 	});

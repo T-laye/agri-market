@@ -54,10 +54,12 @@ export default function ProductCard({
 					<h3 className="font-bold text-base text-neutral-500 leading-5">
 						{product.name}
 					</h3>
-					<span className="flex items-center gap-1 text-xs font-semibold text-secondary-700 shrink-0">
-						<HiStar className="text-secondary-500" />
-						{product.rating.toFixed(1)}
-					</span>
+					{typeof product.rating === "number" && (
+						<span className="flex items-center gap-1 text-xs font-semibold text-secondary-700 shrink-0">
+							<HiStar className="text-secondary-500" />
+							{product.rating.toFixed(1)}
+						</span>
+					)}
 				</div>
 
 				<div className="flex items-center gap-1.5 text-xs text-neutral-400">

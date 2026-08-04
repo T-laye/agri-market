@@ -13,6 +13,10 @@ export const updateProfileSchema = z.object({
 		.or(z.literal(""))
 		.optional(),
 	avatarUrl: z.string().trim().url().or(z.literal("")).optional(),
+	state: z.string().trim().max(60, "State is too long").or(z.literal("")).optional(),
+	city: z.string().trim().max(80, "City is too long").or(z.literal("")).optional(),
+	address: z.string().trim().max(200, "Address is too long").or(z.literal("")).optional(),
+	landmark: z.string().trim().max(120, "Landmark is too long").or(z.literal("")).optional(),
 });
 
 export const changePasswordSchema = z

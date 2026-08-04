@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { HiOutlineCamera } from "react-icons/hi";
 import { updateProfile, type DashboardState } from "@/app/dashboard/actions";
 import { createClient } from "@/lib/supabase/client";
+import { locations } from "@/lib/data/products";
 import Button from "@/components/ui/Button";
 
 const initialState: DashboardState = { error: null };
@@ -36,12 +37,20 @@ export default function ProfileForm({
 	initialName,
 	initialPhone,
 	initialAvatarUrl,
+	initialAddressState,
+	initialCity,
+	initialAddress,
+	initialLandmark,
 }: {
 	userId: string;
 	email: string;
 	initialName: string;
 	initialPhone: string;
 	initialAvatarUrl: string;
+	initialAddressState: string;
+	initialCity: string;
+	initialAddress: string;
+	initialLandmark: string;
 }) {
 	const [state, formAction, pending] = useActionState(updateProfile, initialState);
 	const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
@@ -175,6 +184,88 @@ export default function ProfileForm({
 				/>
 				{state.fieldErrors?.phone && (
 					<span className="text-xs text-red-600">{state.fieldErrors.phone}</span>
+				)}
+			</div>
+
+			<div className="flex flex-col gap-1 pt-2">
+				<span className="text-sm font-semibold text-neutral-500">Delivery Address</span>
+				<span className="text-xs text-neutral-400">
+					Saved here so it&apos;s ready to go when you check out.
+				</span>
+			</div>
+
+			<div className="grid grid-cols-2 gap-4">
+				<div className="flex flex-col gap-1.5">
+					<label htmlFor="state" className="text-sm font-medium text-neutral-500">
+						State
+					</label>
+					<select
+						id="state"
+						name="state"
+						defaultValue={initialAddressState}
+						className="select-class"
+					>
+						<option value="">Select state</option>
+						{locations.map((loc) => (
+							<option key={loc} value={loc}>
+								{loc} State
+							</option>
+						))}
+					</select>
+					{state.fieldErrors?.state && (
+						<span className="text-xs text-red-600">{state.fieldErrors.state}</span>
+					)}
+				</div>
+
+				<div className="flex flex-col gap-1.5">
+					<label htmlFor="city" className="text-sm font-medium text-neutral-500">
+						City / Town
+					</label>
+					<input
+						id="city"
+						name="city"
+						type="text"
+						defaultValue={initialCity}
+						placeholder="Ikeja"
+						className="input-class"
+					/>
+					{state.fieldErrors?.city && (
+						<span className="text-xs text-red-600">{state.fieldErrors.city}</span>
+					)}
+				</div>
+			</div>
+
+			<div className="flex flex-col gap-1.5">
+				<label htmlFor="address" className="text-sm font-medium text-neutral-500">
+					Street address
+				</label>
+				<input
+					id="address"
+					name="address"
+					type="text"
+					defaultValue={initialAddress}
+					placeholder="12 Allen Avenue"
+					className="input-class"
+				/>
+				{state.fieldErrors?.address && (
+					<span className="text-xs text-red-600">{state.fieldErrors.address}</span>
+				)}
+			</div>
+
+			<div className="flex flex-col gap-1.5">
+				<label htmlFor="landmark" className="text-sm font-medium text-neutral-500">
+					Nearby landmark <span className="text-neutral-400 font-normal">(optional)</span>
+				</label>
+				<input
+					id="landmark"
+					name="landmark"
+					type="text"
+					defaultValue={initialLandmark}
+					placeholder="Opposite First Bank"
+					className="input-class"
+				/>
+				{state.fieldErrors?.landmark && (
+					<span className="text-xs text-red-600">{state.fieldErrors.landmark}</span>
 				)}
 			</div>
 

@@ -13,10 +13,12 @@ export default function DashboardLayout({
 	children,
 	isFarmer = false,
 	kycStatus,
+	wide = false,
 }: {
 	children: React.ReactNode;
 	isFarmer?: boolean;
 	kycStatus?: KycStatus;
+	wide?: boolean;
 }) {
 	const pathname = usePathname();
 
@@ -24,7 +26,10 @@ export default function DashboardLayout({
 		{ label: "Profile", href: pageRoutes.dashboard.profile },
 		{ label: "Change Password", href: pageRoutes.dashboard.settings },
 		...(isFarmer
-			? [{ label: "Verification", href: pageRoutes.dashboard.verification }]
+			? [
+					{ label: "Products", href: pageRoutes.dashboard.products },
+					{ label: "Verification", href: pageRoutes.dashboard.verification },
+				]
 			: []),
 	];
 
@@ -70,8 +75,8 @@ export default function DashboardLayout({
 							<Link
 								key={tab.href}
 								href={tab.href}
-								className={`px-4 py-3 text-sm font-medium border-b-2 -mb-px duration-150 ${
-									pathname === tab.href
+								className={`px-4 py-3 text-sm font-medium border-b-2 -mb-px duration-150 whitespace-nowrap ${
+									pathname.startsWith(tab.href)
 										? "border-primary text-primary"
 										: "border-transparent text-neutral-400 hover:text-neutral-500"
 								}`}
@@ -81,7 +86,7 @@ export default function DashboardLayout({
 						))}
 					</div>
 
-					<div className="max-w-xl">{children}</div>
+					<div className={wide ? "max-w-4xl" : "max-w-xl"}>{children}</div>
 				</div>
 			</main>
 			<Footer />

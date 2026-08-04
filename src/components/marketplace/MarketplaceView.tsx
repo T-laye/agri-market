@@ -8,12 +8,7 @@ import {
 	HiOutlineSwitchVertical,
 } from "react-icons/hi";
 import { motion } from "framer-motion";
-import {
-	categories,
-	locations,
-	products,
-	type Product,
-} from "@/lib/data/products";
+import { categories, locations, type Product } from "@/lib/data/products";
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
 import Pagination from "./Pagination";
@@ -37,13 +32,13 @@ function sortProducts(list: Product[], sort: SortOption) {
 		case "price-desc":
 			return sorted.sort((a, b) => b.price - a.price);
 		case "rating":
-			return sorted.sort((a, b) => b.rating - a.rating);
+			return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
 		default:
 			return sorted;
 	}
 }
 
-export default function MarketplaceView() {
+export default function MarketplaceView({ products }: { products: Product[] }) {
 	const [search, setSearch] = useState("");
 	const [category, setCategory] = useState<string>("All");
 	const [location, setLocation] = useState<string>("All");
@@ -172,8 +167,19 @@ export default function MarketplaceView() {
 
 			{filtered.length === 0 ? (
 				<div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
-					<p className="text-neutral-500 font-semibold">No produce matches your search</p>
-					<p className="text-sm text-neutral-400">Try adjusting your filters.</p>
+					{products.length === 0 ? (
+						<>
+							<p className="text-neutral-500 font-semibold">No produce listed yet</p>
+							<p className="text-sm text-neutral-400">
+								Check back soon as verified farmers add their harvest.
+							</p>
+						</>
+					) : (
+						<>
+							<p className="text-neutral-500 font-semibold">No produce matches your search</p>
+							<p className="text-sm text-neutral-400">Try adjusting your filters.</p>
+						</>
+					)}
 				</div>
 			) : (
 				<>

@@ -45,6 +45,10 @@ export async function createProduct(
 		return { error: "Please fix the errors below", fieldErrors: flattenZodErrors(parsed.error) };
 	}
 
+	console.log(
+		`[createProduct] farmerId=${user.id} images=${JSON.stringify(parsed.data.images)}`
+	);
+
 	const { error } = await supabase.from("products").insert({
 		farmer_id: user.id,
 		name: parsed.data.name,
@@ -85,7 +89,11 @@ export async function updateProduct(
 		return { error: "Please fix the errors below", fieldErrors: flattenZodErrors(parsed.error) };
 	}
 
-	const { error } = await supabase
+	console.log(
+		`[updateProduct] productId=${productId} farmerId=${user.id} images=${JSON.stringify(parsed.data.images)}`
+	);
+
+	const { data, error } = await supabase
 		.from("products")
 		.update({
 			name: parsed.data.name,
@@ -99,10 +107,22 @@ export async function updateProduct(
 			images: parsed.data.images,
 		})
 		.eq("id", productId)
-		.eq("farmer_id", user.id);
+		.eq("farmer_id", user.id)
+		.select();
+
+	console.log(
+		`[updateProduct] result rows=${data?.length ?? 0} error=${JSON.stringify(error ?? null)} savedImages=${JSON.stringify(data?.[0]?.images ?? null)}`
+	);
 
 	if (error) {
 		return { error: error.message };
+	}
+
+	if (!data || data.length === 0) {
+		return {
+			error:
+				"Couldn't save changes — this product may no longer belong to your account.",
+		};
 	}
 
 	revalidatePath(pageRoutes.dashboard.products);

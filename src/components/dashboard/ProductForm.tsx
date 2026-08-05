@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import {
 	createProduct,
 	updateProduct,
@@ -24,12 +24,17 @@ export default function ProductForm({
 	const action =
 		mode === "edit" && product ? updateProduct.bind(null, product.id) : createProduct;
 	const [state, formAction, pending] = useActionState(action, initialState);
+	const [imagesUploading, setImagesUploading] = useState(false);
 
 	return (
 		<form action={formAction} className="flex flex-col gap-5">
 			<div className="flex flex-col gap-1.5">
 				<span className="text-sm font-medium text-neutral-500">Photos</span>
-				<ProductImageUpload farmerId={farmerId} initialImages={product?.images} />
+				<ProductImageUpload
+					farmerId={farmerId}
+					initialImages={product?.images}
+					onUploadingChange={setImagesUploading}
+				/>
 				{state.fieldErrors?.images && (
 					<span className="text-xs text-red-600">{state.fieldErrors.images}</span>
 				)}
@@ -195,12 +200,18 @@ export default function ProductForm({
 				<p className="text-sm text-red-600">{state.error}</p>
 			)}
 
-			<Button variant="primary" className="w-fit" disabled={pending}>
+			{imagesUploading && (
+				<p className="text-xs text-neutral-400">Waiting for photos to finish uploading…</p>
+			)}
+
+			<Button variant="primary" className="w-fit" disabled={pending || imagesUploading}>
 				{pending
 					? "Saving…"
-					: mode === "edit"
-						? "Save Changes"
-						: "List Product"}
+					: imagesUploading
+						? "Uploading photos…"
+						: mode === "edit"
+							? "Save Changes"
+							: "List Product"}
 			</Button>
 		</form>
 	);

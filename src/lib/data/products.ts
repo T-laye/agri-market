@@ -151,11 +151,20 @@ export async function getProductById(
 	supabase: SupabaseClient,
 	id: string,
 ): Promise<Product | null> {
-	const { data } = await supabase
+	const { data, error } = await supabase
 		.from("products")
 		.select(PRODUCT_SELECT)
 		.eq("id", id)
 		.maybeSingle();
+
+	console.log(
+		"[getProductById] id=" +
+			id +
+			" images=" +
+			JSON.stringify((data as { images?: unknown } | null)?.images ?? null) +
+			" error=" +
+			JSON.stringify(error ?? null)
+	);
 
 	return data ? mapProductRow(data as unknown as ProductRow) : null;
 }

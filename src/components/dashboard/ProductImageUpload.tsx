@@ -25,13 +25,20 @@ async function uploadProductImage(file: File, farmerId: string) {
 export default function ProductImageUpload({
 	farmerId,
 	initialImages = [],
+	onUploadingChange,
 }: {
 	farmerId: string;
 	initialImages?: string[];
+	onUploadingChange?: (uploading: boolean) => void;
 }) {
 	const [images, setImages] = useState<string[]>(initialImages);
 	const [uploading, setUploading] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	function setUploadingState(value: boolean) {
+		setUploading(value);
+		onUploadingChange?.(value);
+	}
 
 	async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const files = Array.from(e.target.files ?? []);
@@ -45,7 +52,7 @@ export default function ProductImageUpload({
 		}
 
 		const toUpload = files.slice(0, remaining);
-		setUploading(true);
+		setUploadingState(true);
 
 		for (const file of toUpload) {
 			if (!ALLOWED_TYPES.includes(file.type)) {
@@ -60,12 +67,14 @@ export default function ProductImageUpload({
 			try {
 				const url = await uploadProductImage(file, farmerId);
 				setImages((prev) => [...prev, url]);
-			} catch {
-				toast.error(`Couldn't upload ${file.name} — please try again`);
+			} catch (err) {
+				const message = err instanceof Error ? err.message : "Unknown error";
+				console.error("Product image upload failed:", err);
+				toast.error(`Couldn't upload ${file.name}: ${message}`);
 			}
 		}
 
-		setUploading(false);
+		setUploadingState(false);
 	}
 
 	function removeImage(url: string) {

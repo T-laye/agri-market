@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import type { Metadata } from "next";
+import { HiArrowLeft } from "react-icons/hi";
 import { createClient } from "@/lib/supabase/server";
 import { getFarmerProfile } from "@/lib/data/farmer";
 import { pageRoutes } from "@/lib/routes";
@@ -33,6 +35,13 @@ export default async function NewProductPage() {
 		<DashboardLayout isFarmer kycStatus={profile.kyc_status}>
 			<div className="flex flex-col gap-6">
 				<div>
+					<Link
+						href={pageRoutes.dashboard.products}
+						className="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-primary duration-150 mb-3"
+					>
+						<HiArrowLeft />
+						Back to Products
+					</Link>
 					<h2 className="font-bold text-lg text-neutral-500">Add Product</h2>
 					<p className="text-sm text-neutral-400">
 						List a new product for buyers to discover.

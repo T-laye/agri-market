@@ -19,8 +19,8 @@ export default function About() {
 			<div className="flex flex-col md:flex-row gap-10 md:gap-7.5 items-center">
 				<motion.div
 					className="relative w-full md:w-1/2 aspect-4/5 rounded-[15px] overflow-hidden"
-					initial={{ opacity: 0, x: -40 }}
-					whileInView={{ opacity: 1, x: 0 }}
+					initial={{ opacity: 0, y: 30 }}
+					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true, margin: "-50px" }}
 					transition={{ duration: 0.6, ease: "easeOut" }}
 				>
@@ -37,8 +37,8 @@ export default function About() {
 
 				<motion.div
 					className="w-full md:w-1/2 flex flex-col gap-6"
-					initial={{ opacity: 0, x: 40 }}
-					whileInView={{ opacity: 1, x: 0 }}
+					initial={{ opacity: 0, y: 30 }}
+					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true, margin: "-50px" }}
 					transition={{ duration: 0.6, ease: "easeOut" }}
 				>
@@ -60,8 +60,8 @@ export default function About() {
 							<motion.li
 								key={point}
 								className="flex items-start gap-3"
-								initial={{ opacity: 0, x: 20 }}
-								whileInView={{ opacity: 1, x: 0 }}
+								initial={{ opacity: 0, y: 12 }}
+								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true }}
 								transition={{ duration: 0.4, delay: i * 0.1 }}
 							>

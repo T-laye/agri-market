@@ -41,7 +41,9 @@ export default function DashboardLayout({
 					<div className="flex flex-col gap-2 mb-8">
 						<div className="flex items-center gap-3 flex-wrap">
 							<h1 className="h3 text-neutral-500">Account</h1>
-							{isFarmer && kycStatus && <VerificationBadge status={kycStatus} />}
+							{isFarmer && kycStatus && (
+								<VerificationBadge status={kycStatus} />
+							)}
 						</div>
 						<p className="p1 text-neutral-400">
 							Manage your profile and security settings.
@@ -70,7 +72,7 @@ export default function DashboardLayout({
 						</Link>
 					)}
 
-					<div className="flex gap-2 border-b border-neutral-200 mb-8">
+					<div className="flex gap-2 border-b border-neutral-200 mb-8 overflow-auto scrollbar-none">
 						{tabs.map((tab) => (
 							<Link
 								key={tab.href}

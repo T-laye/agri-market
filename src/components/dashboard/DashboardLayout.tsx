@@ -23,6 +23,7 @@ export default function DashboardLayout({
 	const pathname = usePathname();
 
 	const tabs = [
+		{ label: "Profile", href: pageRoutes.dashboard.profile },
 		{ label: "My Orders", href: pageRoutes.dashboard.myOrders },
 		...(isFarmer
 			? [
@@ -33,7 +34,6 @@ export default function DashboardLayout({
 					{ label: "Verification", href: pageRoutes.dashboard.verification },
 				]
 			: []),
-		{ label: "Profile", href: pageRoutes.dashboard.profile },
 		{ label: "Change Password", href: pageRoutes.dashboard.settings },
 	];
 

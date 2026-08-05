@@ -45,10 +45,61 @@ const figtree = localFont({
 	display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agri-market-v1.vercel.app";
+const description =
+	"AgriMarket connects Nigerian farmers directly with buyers through transparent listings, secure escrow payments, and real-time market information.";
+
 export const metadata: Metadata = {
-	title: "AgriMarket Nigeria | Direct Farm-to-Buyer Marketplace",
-	description:
-		"AgriMarket connects Nigerian farmers directly with buyers through transparent listings, secure escrow payments, and real-time market information.",
+	title: {
+		default: "AgriMarket Nigeria | Direct Farm-to-Buyer Marketplace",
+		template: "%s | AgriMarket Nigeria",
+	},
+	description,
+	keywords: [
+		"AgriMarket Nigeria",
+		"Nigerian farmers marketplace",
+		"farm to buyer",
+		"buy produce online Nigeria",
+		"sell farm produce",
+		"agriculture marketplace",
+		"escrow payments Nigeria",
+		"fresh produce Nigeria",
+		"farmer marketplace",
+		"agritech Nigeria",
+		"market prices Nigeria",
+		"wholesale produce Nigeria",
+	],
+	authors: [{ name: "AgriMarket Nigeria" }],
+	creator: "AgriMarket Nigeria",
+	metadataBase: new URL(siteUrl),
+	openGraph: {
+		type: "website",
+		locale: "en_NG",
+		url: siteUrl,
+		siteName: "AgriMarket Nigeria",
+		title: "AgriMarket Nigeria | Direct Farm-to-Buyer Marketplace",
+		description,
+		// The actual share image comes from src/app/opengraph-image.tsx —
+		// Next.js generates it and wires it into this metadata automatically,
+		// no need to list a file here.
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "AgriMarket Nigeria | Direct Farm-to-Buyer Marketplace",
+		description,
+		creator: "@agrimarketng", // Replace with your actual X handle, or remove this line
+	},
+	robots: {
+		index: true,
+		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+			"max-image-preview": "large",
+		},
+	},
+	// Tab icon / apple touch icon come from src/app/icon.tsx and
+	// src/app/apple-icon.tsx — Next.js generates and wires those in too.
 };
 
 export default function RootLayout({

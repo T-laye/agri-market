@@ -9,7 +9,9 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "*.supabase.co",
-        pathname: "/storage/v1/object/public/**",
+        // Covers both public URLs (/object/public/**) and the signed URLs
+        // used for private KYC documents (/object/sign/**).
+        pathname: "/storage/v1/object/**",
       },
     ],
   },

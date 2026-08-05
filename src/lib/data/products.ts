@@ -147,6 +147,19 @@ export async function getFarmerProducts(
 	return (data as unknown as ProductRow[]).map(mapProductRow);
 }
 
+/** Admin-only: every product platform-wide, regardless of farmer
+ * verification or active status. RLS grants admins SELECT on products
+ * (see 0007_admin.sql). */
+export async function getAllProducts(supabase: SupabaseClient): Promise<Product[]> {
+	const { data, error } = await supabase
+		.from("products")
+		.select(PRODUCT_SELECT)
+		.order("created_at", { ascending: false });
+
+	if (error || !data) return [];
+	return (data as unknown as ProductRow[]).map(mapProductRow);
+}
+
 export async function getProductById(
 	supabase: SupabaseClient,
 	id: string,

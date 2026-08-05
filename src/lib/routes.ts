@@ -4,6 +4,8 @@ export const pageRoutes = {
 	marketplace: "/marketplace",
 	cart: "/cart",
 	checkout: "/checkout",
+	checkoutCallback: "/checkout/callback",
+	orderConfirmation: "/checkout/success",
 
 	auth: {
 		login: "/auth/login",
@@ -20,7 +22,18 @@ export const pageRoutes = {
 		verification: "/dashboard/verification",
 		products: "/dashboard/products",
 		orders: "/dashboard/orders",
+		myOrders: "/dashboard/my-orders",
+		earnings: "/dashboard/earnings",
+		payoutSettings: "/dashboard/payout-settings",
 		messages: "/dashboard/messages",
 		analytics: "/dashboard/analytics",
+	},
+
+	admin: {
+		index: "/admin",
+		users: "/admin/users",
+		farmers: "/admin/farmers",
+		products: "/admin/products",
+		orders: "/admin/orders",
 	},
 };

@@ -23,14 +23,18 @@ export default function DashboardLayout({
 	const pathname = usePathname();
 
 	const tabs = [
-		{ label: "Profile", href: pageRoutes.dashboard.profile },
-		{ label: "Change Password", href: pageRoutes.dashboard.settings },
+		{ label: "My Orders", href: pageRoutes.dashboard.myOrders },
 		...(isFarmer
 			? [
 					{ label: "Products", href: pageRoutes.dashboard.products },
+					{ label: "Orders", href: pageRoutes.dashboard.orders },
+					{ label: "Earnings", href: pageRoutes.dashboard.earnings },
+					{ label: "Payout Settings", href: pageRoutes.dashboard.payoutSettings },
 					{ label: "Verification", href: pageRoutes.dashboard.verification },
 				]
 			: []),
+		{ label: "Profile", href: pageRoutes.dashboard.profile },
+		{ label: "Change Password", href: pageRoutes.dashboard.settings },
 	];
 
 	return (

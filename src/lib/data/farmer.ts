@@ -11,6 +11,11 @@ export type FarmerProfile = {
 	kyc_documents: { type: string; url: string }[];
 	rejection_reason: string | null;
 	verified_at: string | null;
+	bank_code: string | null;
+	bank_name: string | null;
+	account_number: string | null;
+	account_name: string | null;
+	paystack_recipient_code: string | null;
 };
 
 export async function getFarmerProfile(

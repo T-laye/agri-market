@@ -33,14 +33,15 @@ export default function CartDrawer({
 	const totalPrice = useCartStore(selectTotalPrice);
 
 	function handleCheckout() {
+		onClose();
+
 		if (!user) {
-			onClose();
 			toast.info("Please sign up or log in to check out");
 			router.push(`${pageRoutes.auth.signup}?redirect=${pageRoutes.checkout}`);
 			return;
 		}
 
-		toast.info("Checkout is coming soon — hang tight!");
+		router.push(pageRoutes.checkout);
 	}
 
 	return (

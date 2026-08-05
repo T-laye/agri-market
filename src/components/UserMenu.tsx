@@ -10,6 +10,7 @@ import {
 	HiOutlineUserCircle,
 	HiOutlineSparkles,
 	HiOutlineBadgeCheck,
+	HiOutlineShieldCheck,
 } from "react-icons/hi";
 import { signOut } from "@/app/auth/actions";
 import { pageRoutes } from "@/lib/routes";
@@ -37,6 +38,7 @@ export default function UserMenu({
 	const name = (user.user_metadata?.name as string) || user.email || "Account";
 	const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
 	const isFarmer = Boolean(user.user_metadata?.is_farmer);
+	const isAdmin = Boolean(user.user_metadata?.is_admin);
 	const initial = name.charAt(0).toUpperCase();
 
 	return (
@@ -77,6 +79,16 @@ export default function UserMenu({
 						<p className="text-sm font-semibold text-neutral-500 truncate">{name}</p>
 						<p className="text-xs text-neutral-400 truncate">{user.email}</p>
 					</div>
+					{isAdmin && (
+						<Link
+							href={pageRoutes.admin.index}
+							onClick={() => setOpen(false)}
+							className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-primary-900 hover:bg-primary-100 duration-150"
+						>
+							<HiOutlineShieldCheck className="text-base" />
+							Admin Dashboard
+						</Link>
+					)}
 					<Link
 						href={pageRoutes.dashboard.profile}
 						onClick={() => setOpen(false)}

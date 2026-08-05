@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { HiMenu, HiX, HiOutlineLogout } from "react-icons/hi";
+import { HiMenu, HiX, HiOutlineLogout, HiOutlineShieldCheck } from "react-icons/hi";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 import Logo from "./Logo";
 import Button from "./ui/Button";
@@ -197,6 +197,16 @@ export default function Header({ transparent = true }: { transparent?: boolean }
 													<p className="text-xs text-neutral-400 truncate">{user.email}</p>
 												</div>
 											</Link>
+											{user.user_metadata?.is_admin && (
+												<Link
+													href={pageRoutes.admin.index}
+													onClick={() => setOpen(false)}
+													className="w-full flex items-center justify-center gap-2 rounded-[30px] px-8 py-3.5 text-sm font-semibold border-2 border-primary-900 text-primary-900 hover:bg-primary-100 duration-150"
+												>
+													<HiOutlineShieldCheck />
+													Admin Dashboard
+												</Link>
+											)}
 											<Link
 												href={
 													user.user_metadata?.is_farmer

@@ -87,43 +87,50 @@ export default async function ProductsPage() {
 				) : (
 					<div className="flex flex-col divide-y divide-neutral-200 border border-neutral-200 rounded-[15px] overflow-hidden">
 						{products.map((product) => (
-							<div key={product.id} className="flex items-center gap-4 p-4">
-								<div className="relative w-16 h-16 rounded-[10px] overflow-hidden shrink-0 bg-neutral-100">
-									<Image
-										src={product.image}
-										alt={product.name}
-										fill
-										sizes="64px"
-										className="object-cover"
-										unoptimized
-									/>
-								</div>
-
-								<div className="flex-1 min-w-0">
-									<div className="flex items-center gap-2">
-										<p className="font-semibold text-sm text-neutral-500 truncate">
-											{product.name}
-										</p>
-										<span
-											className={`text-[10px] font-bold px-2 py-0.5 rounded-[30px] shrink-0 ${
-												product.isActive
-													? "bg-secondary-100 text-secondary-700"
-													: "bg-neutral-100 text-neutral-400"
-											}`}
-										>
-											{product.isActive ? "Active" : "Inactive"}
-										</span>
+							<div
+								key={product.id}
+								className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4"
+							>
+								<div className="flex items-center gap-4 flex-1 min-w-0">
+									<div className="relative w-16 h-16 rounded-[10px] overflow-hidden shrink-0 bg-neutral-100">
+										<Image
+											src={product.image}
+											alt={product.name}
+											fill
+											sizes="64px"
+											className="object-cover"
+											unoptimized
+										/>
 									</div>
-									<p className="text-xs text-neutral-400">
-										{product.category} · {product.quantity} in stock
-									</p>
+
+									<div className="flex-1 min-w-0">
+										<div className="flex items-center gap-2 flex-wrap">
+											<p className="font-semibold text-sm text-neutral-500 truncate">
+												{product.name}
+											</p>
+											<span
+												className={`text-[10px] font-bold px-2 py-0.5 rounded-[30px] shrink-0 ${
+													product.isActive
+														? "bg-secondary-100 text-secondary-700"
+														: "bg-neutral-100 text-neutral-400"
+												}`}
+											>
+												{product.isActive ? "Active" : "Inactive"}
+											</span>
+										</div>
+										<p className="text-xs text-neutral-400">
+											{product.category} · {product.quantity} in stock
+										</p>
+									</div>
 								</div>
 
-								<span className="font-bold text-primary text-sm shrink-0">
-									{formatNaira(product.price)}
-								</span>
+								<div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 pl-20 sm:pl-0">
+									<span className="font-bold text-primary text-sm">
+										{formatNaira(product.price)}
+									</span>
 
-								<ProductRowActions productId={product.id} isActive={product.isActive} />
+									<ProductRowActions productId={product.id} isActive={product.isActive} />
+								</div>
 							</div>
 						))}
 					</div>

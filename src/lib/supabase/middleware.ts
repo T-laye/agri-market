@@ -2,7 +2,11 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { pageRoutes } from "@/lib/routes";
 
-const PROTECTED_PREFIXES = [pageRoutes.dashboard.index];
+const PROTECTED_PREFIXES = [
+	pageRoutes.dashboard.index,
+	pageRoutes.checkout,
+	pageRoutes.admin.index,
+];
 
 export async function updateSession(request: NextRequest) {
 	let supabaseResponse = NextResponse.next({ request });
@@ -40,6 +44,13 @@ export async function updateSession(request: NextRequest) {
 		const url = request.nextUrl.clone();
 		url.pathname = pageRoutes.auth.login;
 		url.searchParams.set("redirect", request.nextUrl.pathname);
+		return NextResponse.redirect(url);
+	}
+
+	const isAdminRoute = request.nextUrl.pathname.startsWith(pageRoutes.admin.index);
+	if (isAdminRoute && !user?.user_metadata?.is_admin) {
+		const url = request.nextUrl.clone();
+		url.pathname = pageRoutes.home;
 		return NextResponse.redirect(url);
 	}
 

@@ -1,10 +1,13 @@
 import { redirect, notFound } from "next/navigation";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { HiOutlinePhone, HiOutlineMail, HiOutlineLocationMarker, HiOutlineCube, HiOutlineCash } from "react-icons/hi";
 import { createClient } from "@/lib/supabase/server";
-import { getFarmerProfileForAdmin } from "@/lib/data/admin";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getFarmerForAdmin } from "@/lib/data/admin";
 import { pageRoutes } from "@/lib/routes";
 import AdminLayout from "@/components/admin/AdminLayout";
+import AdminAvatar from "@/components/admin/AdminAvatar";
 import VerificationBadge from "@/components/dashboard/VerificationBadge";
 import KycReviewActions from "@/components/admin/KycReviewActions";
 
@@ -19,6 +22,14 @@ const DOCUMENT_LABELS: Record<string, string> = {
 
 function isImagePath(path: string) {
 	return /\.(png|jpe?g|webp)$/i.test(path);
+}
+
+function formatNaira(amount: number) {
+	return new Intl.NumberFormat("en-NG", {
+		style: "currency",
+		currency: "NGN",
+		maximumFractionDigits: 0,
+	}).format(amount);
 }
 
 export default async function AdminFarmerDetailPage({
@@ -39,7 +50,13 @@ export default async function AdminFarmerDetailPage({
 		redirect(pageRoutes.home);
 	}
 
-	const farmer = await getFarmerProfileForAdmin(supabase, id);
+	let adminClient;
+	try {
+		adminClient = createAdminClient();
+	} catch {
+		adminClient = undefined;
+	}
+	const farmer = await getFarmerForAdmin(supabase, id, adminClient);
 	if (!farmer) {
 		notFound();
 	}
@@ -58,17 +75,81 @@ export default async function AdminFarmerDetailPage({
 		})
 	);
 
+	const deliveryAddress = [
+		farmer.deliveryAddress,
+		farmer.deliveryCity,
+		farmer.deliveryState ? `${farmer.deliveryState} State` : null,
+	]
+		.filter(Boolean)
+		.join(", ");
+
 	return (
 		<AdminLayout>
 			<div className="flex flex-col gap-8 max-w-3xl">
-				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-					<div>
-						<h2 className="font-bold text-lg text-neutral-500">{farmer.farm_name}</h2>
-						<p className="text-sm text-neutral-400">
-							{farmer.state} State · {farmer.phone}
-						</p>
+				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+					<div className="flex items-center gap-4">
+						<AdminAvatar avatarUrl={farmer.avatarUrl} name={farmer.name || farmer.farm_name} size={56} />
+						<div>
+							<div className="flex items-center gap-2 flex-wrap">
+								<h2 className="font-bold text-lg text-neutral-500">{farmer.farm_name}</h2>
+								{farmer.provider === "google" && (
+									<span className="rounded-[30px] bg-blue-50 text-blue-600 text-[10px] font-semibold px-2.5 py-1">
+										Google
+									</span>
+								)}
+							</div>
+							<p className="text-sm text-neutral-400">{farmer.name ?? "No name on file"}</p>
+						</div>
 					</div>
 					<VerificationBadge status={farmer.kyc_status} />
+				</div>
+
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div className="flex flex-col gap-3 border border-neutral-200 rounded-[15px] p-4">
+						<h3 className="font-semibold text-sm text-neutral-500">Contact</h3>
+						<div className="flex flex-col gap-2 text-sm text-neutral-500">
+							{farmer.email && (
+								<span className="flex items-center gap-2">
+									<HiOutlineMail className="text-neutral-400 shrink-0" /> {farmer.email}
+								</span>
+							)}
+							<span className="flex items-center gap-2">
+								<HiOutlinePhone className="text-neutral-400 shrink-0" /> {farmer.phone}
+							</span>
+							{deliveryAddress && (
+								<span className="flex items-center gap-2">
+									<HiOutlineLocationMarker className="text-neutral-400 shrink-0" /> {deliveryAddress}
+								</span>
+							)}
+						</div>
+						{farmer.createdAt && (
+							<p className="text-xs text-neutral-400">
+								Joined{" "}
+								{new Date(farmer.createdAt).toLocaleDateString("en-NG", { dateStyle: "medium" })}
+								{farmer.lastSignInAt && (
+									<>
+										{" "}
+										· Last active{" "}
+										{new Date(farmer.lastSignInAt).toLocaleDateString("en-NG", { dateStyle: "medium" })}
+									</>
+								)}
+							</p>
+						)}
+					</div>
+
+					<div className="flex flex-col gap-3 border border-neutral-200 rounded-[15px] p-4">
+						<h3 className="font-semibold text-sm text-neutral-500">Activity</h3>
+						<div className="flex flex-col gap-2 text-sm text-neutral-500">
+							<span className="flex items-center gap-2">
+								<HiOutlineCube className="text-neutral-400 shrink-0" /> {farmer.productCount}{" "}
+								product{farmer.productCount === 1 ? "" : "s"} listed
+							</span>
+							<span className="flex items-center gap-2">
+								<HiOutlineCash className="text-neutral-400 shrink-0" /> {formatNaira(farmer.totalSales)}{" "}
+								in lifetime sales
+							</span>
+						</div>
+					</div>
 				</div>
 
 				{farmer.kyc_status === "rejected" && farmer.rejection_reason && (

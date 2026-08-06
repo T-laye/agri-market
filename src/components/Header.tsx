@@ -14,6 +14,7 @@ import UserMenu from "./UserMenu";
 import { useCartStore, selectTotalItems } from "@/store/cart";
 import { useUser } from "@/hooks/useUser";
 import { signOut } from "@/app/auth/actions";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { pageRoutes } from "@/lib/routes";
 
 const navLinks = [
@@ -30,6 +31,7 @@ export default function Header({ transparent = true }: { transparent?: boolean }
 	const [mounted, setMounted] = useState(false);
 	const totalItems = useCartStore(selectTotalItems);
 	const { user, loading } = useUser();
+	const avatarUrl = resolveAvatarUrl(user?.user_metadata);
 
 	const solid = !transparent || scrolled;
 
@@ -174,9 +176,9 @@ export default function Header({ transparent = true }: { transparent?: boolean }
 												className="flex items-center gap-3 px-1 pb-2"
 											>
 												<span className="relative w-9 h-9 rounded-full overflow-hidden bg-secondary-500 shrink-0">
-													{user.user_metadata?.avatar_url ? (
+													{avatarUrl ? (
 														<Image
-															src={user.user_metadata.avatar_url as string}
+															src={avatarUrl}
 															alt=""
 															fill
 															sizes="36px"

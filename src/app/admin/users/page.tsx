@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { HiOutlineExclamationCircle, HiOutlinePhone, HiOutlineLocationMarker } from "react-icons/hi";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAllUsersForAdmin, type AdminUser } from "@/lib/data/admin";
 import { pageRoutes } from "@/lib/routes";
 import AdminLayout from "@/components/admin/AdminLayout";
+import AdminAvatar from "@/components/admin/AdminAvatar";
 import BanToggleButton from "@/components/admin/BanToggleButton";
 
 export const metadata: Metadata = {
@@ -36,6 +37,11 @@ function RoleBadges({ user }: { user: AdminUser }) {
 			{!user.isAdmin && !user.isFarmer && (
 				<span className="rounded-[30px] bg-neutral-100 text-neutral-400 text-[10px] font-semibold px-2.5 py-1">
 					Buyer
+				</span>
+			)}
+			{user.provider === "google" && (
+				<span className="rounded-[30px] bg-blue-50 text-blue-600 text-[10px] font-semibold px-2.5 py-1">
+					Google
 				</span>
 			)}
 			{user.bannedUntil && (
@@ -98,50 +104,80 @@ export default async function AdminUsersPage() {
 					</div>
 				) : (
 					<div className="flex flex-col divide-y divide-neutral-200 border border-neutral-200 rounded-[15px] overflow-hidden">
-						{users.map((u) => (
-							<div
-								key={u.id}
-								className="flex flex-col sm:flex-row sm:items-center gap-3 p-4"
-							>
-								<div className="flex-1 min-w-0">
-									<div className="flex items-center gap-2 flex-wrap">
-										<p className="font-semibold text-sm text-neutral-500 truncate">
+						{users.map((u) => {
+							const location = [u.deliveryCity, u.deliveryState].filter(Boolean).join(", ");
+
+							return (
+								<div key={u.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4">
+									<AdminAvatar avatarUrl={u.avatarUrl} name={u.name || u.email} />
+
+									<div className="flex-1 min-w-0">
+										<div className="flex items-center gap-2 flex-wrap">
+											<p className="font-semibold text-sm text-neutral-500 truncate">
+												{u.name || "No name provided"}
+											</p>
+											<RoleBadges user={u} />
+										</div>
+										<p className="text-xs text-neutral-400 mt-0.5 truncate">
 											{u.email ?? "No email"}
 										</p>
-										<RoleBadges user={u} />
+
+										<div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-neutral-400">
+											{u.personalPhone && (
+												<span className="flex items-center gap-1">
+													<HiOutlinePhone /> {u.personalPhone}
+												</span>
+											)}
+											{location && (
+												<span className="flex items-center gap-1">
+													<HiOutlineLocationMarker /> {location}
+												</span>
+											)}
+											<span>
+												Joined{" "}
+												{new Date(u.createdAt).toLocaleDateString("en-NG", { dateStyle: "medium" })}
+											</span>
+											{u.lastSignInAt && (
+												<span>
+													Last active{" "}
+													{new Date(u.lastSignInAt).toLocaleDateString("en-NG", {
+														dateStyle: "medium",
+													})}
+												</span>
+											)}
+										</div>
+
+										{u.farmName && (
+											<p className="text-xs text-neutral-400 mt-0.5">Farm: {u.farmName}</p>
+										)}
+
+										{(u.isFarmer || u.orderCount > 0) && (
+											<p className="text-xs text-neutral-400 mt-1">
+												{u.isFarmer && (
+													<>
+														{u.productCount} product{u.productCount === 1 ? "" : "s"} ·{" "}
+														{formatNaira(u.totalSales)} in sales
+													</>
+												)}
+												{u.isFarmer && u.orderCount > 0 && " · "}
+												{u.orderCount > 0 && (
+													<>
+														{u.orderCount} order{u.orderCount === 1 ? "" : "s"} placed ·{" "}
+														{formatNaira(u.totalSpent)} spent
+													</>
+												)}
+											</p>
+										)}
 									</div>
-									<p className="text-xs text-neutral-400 mt-0.5">
-										Joined{" "}
-										{new Date(u.createdAt).toLocaleDateString("en-NG", {
-											dateStyle: "medium",
-										})}
-										{u.farmName && <> · {u.farmName}</>}
-									</p>
-									{(u.isFarmer || u.orderCount > 0) && (
-										<p className="text-xs text-neutral-400 mt-0.5">
-											{u.isFarmer && (
-												<>
-													{u.productCount} product{u.productCount === 1 ? "" : "s"} ·{" "}
-													{formatNaira(u.totalSales)} in sales
-												</>
-											)}
-											{u.isFarmer && u.orderCount > 0 && " · "}
-											{u.orderCount > 0 && (
-												<>
-													{u.orderCount} order{u.orderCount === 1 ? "" : "s"} placed ·{" "}
-													{formatNaira(u.totalSpent)} spent
-												</>
-											)}
-										</p>
-									)}
+
+									<BanToggleButton
+										userId={u.id}
+										banned={Boolean(u.bannedUntil)}
+										disabled={u.isAdmin || u.id === user.id}
+									/>
 								</div>
-								<BanToggleButton
-									userId={u.id}
-									banned={Boolean(u.bannedUntil)}
-									disabled={u.isAdmin || u.id === user.id}
-								/>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				)}
 			</div>

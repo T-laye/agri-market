@@ -13,6 +13,7 @@ import {
 	HiOutlineShieldCheck,
 } from "react-icons/hi";
 import { signOut } from "@/app/auth/actions";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { pageRoutes } from "@/lib/routes";
 
 export default function UserMenu({
@@ -36,7 +37,7 @@ export default function UserMenu({
 	}, []);
 
 	const name = (user.user_metadata?.name as string) || user.email || "Account";
-	const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+	const avatarUrl = resolveAvatarUrl(user.user_metadata);
 	const isFarmer = Boolean(user.user_metadata?.is_farmer);
 	const isAdmin = Boolean(user.user_metadata?.is_admin);
 	const initial = name.charAt(0).toUpperCase();

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getFarmerProfile } from "@/lib/data/farmer";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { pageRoutes } from "@/lib/routes";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ProfileForm from "@/components/dashboard/ProfileForm";
@@ -31,7 +32,7 @@ export default async function ProfilePage() {
 				email={user.email ?? ""}
 				initialName={(metadata.name as string) ?? ""}
 				initialPhone={(metadata.phone as string) ?? ""}
-				initialAvatarUrl={(metadata.avatar_url as string) ?? ""}
+				initialAvatarUrl={resolveAvatarUrl(metadata) ?? ""}
 				initialAddressState={(metadata.state as string) ?? ""}
 				initialCity={(metadata.city as string) ?? ""}
 				initialAddress={(metadata.address as string) ?? ""}

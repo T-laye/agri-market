@@ -51,7 +51,11 @@ export async function updateProfile(
 			city: city || null,
 			address: address || null,
 			landmark: landmark || null,
-			...(avatarUrl ? { avatar_url: avatarUrl } : {}),
+			// Stored under a separate key from avatar_url on purpose — Google
+			// OAuth re-syncs avatar_url/picture into user_metadata on every
+			// sign-in, which would silently overwrite this otherwise. See
+			// src/lib/avatar.ts for how the two get resolved for display.
+			...(avatarUrl ? { custom_avatar_url: avatarUrl } : {}),
 		},
 	});
 

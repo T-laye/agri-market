@@ -67,21 +67,12 @@ export async function getAllProductsForAdmin(supabase: SupabaseClient): Promise<
 	}));
 }
 
-export type AdminUser = {
-	id: string;
-	email: string | null;
-	createdAt: string;
-	lastSignInAt: string | null;
-	isAdmin: boolean;
-	isFarmer: boolean;
-	bannedUntil: string | null;
-	farmName: string | null;
-	kycStatus: KycStatus | null;
-	productCount: number;
-	totalSales: number;
-	orderCount: number;
-	totalSpent: number;
-};
+// ---------------------------------------------------------------------------
+// Auth Admin API helpers — everything that needs to see beyond RLS (email,
+// avatar, phone, delivery address, ban status, signup provider) lives on
+// the auth.users record itself, not a public table, so it only ever comes
+// from these service-role calls.
+// ---------------------------------------------------------------------------
 
 type AuthAdminUser = {
 	id: string;
@@ -89,20 +80,16 @@ type AuthAdminUser = {
 	created_at: string;
 	last_sign_in_at?: string;
 	banned_until?: string;
+	app_metadata?: { provider?: string };
 	user_metadata?: Record<string, unknown>;
 };
 
-/** Lists every registered account (buyers, farmers, admins) via the Auth
- * Admin API — the only way to see the full roster, since there's no
- * public table backing auth.users and the regular client can't call
+/** Every registered account (buyers, farmers, admins) via the Auth Admin
+ * API — the only way to see the full roster, since there's no public
+ * table backing auth.users and the regular client can't call
  * .auth.admin.*. Requires the service-role client; callers must have
- * already verified the requester is an admin. Enriches each user with
- * their farmer profile (if any), product count, lifetime sales, order
- * count, and lifetime spend. */
-export async function getAllUsersForAdmin(
-	supabase: SupabaseClient,
-	adminClient: SupabaseClient
-): Promise<AdminUser[]> {
+ * already verified the requester is an admin. */
+async function listAllAuthUsers(adminClient: SupabaseClient): Promise<AuthAdminUser[]> {
 	const authUsers: AuthAdminUser[] = [];
 	const perPage = 200;
 	for (let page = 1; ; page++) {
@@ -112,8 +99,98 @@ export async function getAllUsersForAdmin(
 		authUsers.push(...users);
 		if (users.length < perPage) break;
 	}
+	return authUsers;
+}
 
-	const [farmers, products, orders] = await Promise.all([
+export type AdminContact = {
+	email: string | null;
+	name: string | null;
+	avatarUrl: string | null;
+	// Prefixed with "personal"/"delivery" (rather than phone/state/city/
+	// address/landmark) so this merges safely into AdminFarmer alongside
+	// FarmerProfile's own `phone` (farm contact) and `state` (farm's
+	// operating state) without one silently clobbering the other.
+	personalPhone: string | null;
+	deliveryState: string | null;
+	deliveryCity: string | null;
+	deliveryAddress: string | null;
+	deliveryLandmark: string | null;
+	provider: string | null;
+	createdAt: string;
+	lastSignInAt: string | null;
+	bannedUntil: string | null;
+	isAdmin: boolean;
+	isFarmer: boolean;
+};
+
+/** Pulls the fields a buyer/farmer actually filled in — profile.tsx's
+ * updateProfile writes name/phone/custom_avatar_url/state/city/address/
+ * landmark into user_metadata, and Google sign-in populates name/
+ * avatar_url/picture/email on its own (under slightly different keys,
+ * hence the fallbacks — custom_avatar_url always wins if the user
+ * uploaded their own photo, see src/lib/avatar.ts). */
+function mapAuthUserToContact(u: AuthAdminUser, now: number): AdminContact {
+	const meta = u.user_metadata ?? {};
+	const bannedUntil =
+		u.banned_until && new Date(u.banned_until).getTime() > now ? u.banned_until : null;
+
+	return {
+		email: u.email ?? null,
+		name: (meta.name as string) || (meta.full_name as string) || null,
+		avatarUrl:
+			(meta.custom_avatar_url as string) ||
+			(meta.avatar_url as string) ||
+			(meta.picture as string) ||
+			null,
+		personalPhone: (meta.phone as string) || null,
+		deliveryState: (meta.state as string) || null,
+		deliveryCity: (meta.city as string) || null,
+		deliveryAddress: (meta.address as string) || null,
+		deliveryLandmark: (meta.landmark as string) || null,
+		provider: u.app_metadata?.provider ?? null,
+		createdAt: u.created_at,
+		lastSignInAt: u.last_sign_in_at ?? null,
+		bannedUntil,
+		isAdmin: Boolean(meta.is_admin),
+		isFarmer: Boolean(meta.is_farmer),
+	};
+}
+
+const EMPTY_CONTACT: AdminContact = {
+	email: null,
+	name: null,
+	avatarUrl: null,
+	personalPhone: null,
+	deliveryState: null,
+	deliveryCity: null,
+	deliveryAddress: null,
+	deliveryLandmark: null,
+	provider: null,
+	createdAt: "",
+	lastSignInAt: null,
+	bannedUntil: null,
+	isAdmin: false,
+	isFarmer: true,
+};
+
+export type AdminUser = AdminContact & {
+	id: string;
+	farmName: string | null;
+	kycStatus: KycStatus | null;
+	productCount: number;
+	totalSales: number;
+	orderCount: number;
+	totalSpent: number;
+};
+
+/** Every registered account, enriched with their farmer profile (if any),
+ * product count, lifetime sales, order count, and lifetime spend. */
+export async function getAllUsersForAdmin(
+	supabase: SupabaseClient,
+	adminClient: SupabaseClient
+): Promise<AdminUser[]> {
+	const [authUsers, farmers, products, orders] = await Promise.all([
+		listAllAuthUsers(adminClient),
 		getAllFarmerProfiles(supabase),
 		getAllProducts(supabase),
 		getAllOrders(supabase, 500),
@@ -149,18 +226,10 @@ export async function getAllUsersForAdmin(
 	return authUsers
 		.map((u) => {
 			const farmer = farmerMap.get(u.id);
-			const bannedUntil = u.banned_until && new Date(u.banned_until).getTime() > now
-				? u.banned_until
-				: null;
 
 			return {
 				id: u.id,
-				email: u.email ?? null,
-				createdAt: u.created_at,
-				lastSignInAt: u.last_sign_in_at ?? null,
-				isAdmin: Boolean(u.user_metadata?.is_admin),
-				isFarmer: Boolean(u.user_metadata?.is_farmer),
-				bannedUntil,
+				...mapAuthUserToContact(u, now),
 				farmName: farmer?.farm_name ?? null,
 				kycStatus: farmer?.kyc_status ?? null,
 				productCount: productCountByFarmer.get(u.id) ?? 0,
@@ -170,6 +239,104 @@ export async function getAllUsersForAdmin(
 			};
 		})
 		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export type AdminFarmer = FarmerProfile &
+	AdminContact & {
+		productCount: number;
+		totalSales: number;
+	};
+
+/** Every farmer, with their auth account's contact details (email,
+ * personal name, avatar, phone, delivery address) layered on top of their
+ * farm/KYC/bank profile. `adminClient` is optional — without it (no
+ * service-role key configured) this still returns full farm/KYC data,
+ * just without the auth-only contact fields. */
+export async function getAllFarmersForAdmin(
+	supabase: SupabaseClient,
+	adminClient?: SupabaseClient
+): Promise<AdminFarmer[]> {
+	const [farmers, products, orders, authUsers] = await Promise.all([
+		getAllFarmerProfiles(supabase),
+		getAllProducts(supabase),
+		getAllOrders(supabase, 500),
+		adminClient ? listAllAuthUsers(adminClient).catch(() => []) : Promise.resolve([]),
+	]);
+
+	const authMap = new Map(authUsers.map((u) => [u.id, u]));
+
+	const productCountByFarmer = new Map<string, number>();
+	for (const p of products) {
+		productCountByFarmer.set(p.farmerId, (productCountByFarmer.get(p.farmerId) ?? 0) + 1);
+	}
+
+	const salesByFarmer = new Map<string, number>();
+	for (const order of orders) {
+		for (const item of order.items) {
+			if (item.status !== "completed") continue;
+			salesByFarmer.set(
+				item.farmerId,
+				(salesByFarmer.get(item.farmerId) ?? 0) + item.unitPrice * item.quantity
+			);
+		}
+	}
+
+	const now = Date.now();
+
+	return farmers.map((farmer) => {
+		const authUser = authMap.get(farmer.id);
+		return {
+			...farmer,
+			...(authUser ? mapAuthUserToContact(authUser, now) : EMPTY_CONTACT),
+			productCount: productCountByFarmer.get(farmer.id) ?? 0,
+			totalSales: salesByFarmer.get(farmer.id) ?? 0,
+		};
+	});
+}
+
+/** Single farmer, same shape as getAllFarmersForAdmin — for the
+ * farmer detail/KYC review page. */
+export async function getFarmerForAdmin(
+	supabase: SupabaseClient,
+	farmerId: string,
+	adminClient?: SupabaseClient
+): Promise<AdminFarmer | null> {
+	const farmer = await getFarmerProfileForAdmin(supabase, farmerId);
+	if (!farmer) return null;
+
+	const [products, orders] = await Promise.all([
+		getAllProducts(supabase),
+		getAllOrders(supabase, 500),
+	]);
+
+	let contact: AdminContact | null = null;
+	if (adminClient) {
+		try {
+			const { data, error } = await adminClient.auth.admin.getUserById(farmerId);
+			if (!error && data.user) {
+				contact = mapAuthUserToContact(data.user as AuthAdminUser, Date.now());
+			}
+		} catch {
+			// Service-role key missing/invalid — contact fields just stay null.
+		}
+	}
+
+	const productCount = products.filter((p) => p.farmerId === farmerId).length;
+	const totalSales = orders.reduce((sum, order) => {
+		return (
+			sum +
+			order.items
+				.filter((item) => item.farmerId === farmerId && item.status === "completed")
+				.reduce((s, item) => s + item.unitPrice * item.quantity, 0)
+		);
+	}, 0);
+
+	return {
+		...farmer,
+		...(contact ?? EMPTY_CONTACT),
+		productCount,
+		totalSales,
+	};
 }
 
 export type AdminStats = {

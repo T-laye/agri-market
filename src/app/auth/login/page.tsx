@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import AuthLayout from "@/components/auth/AuthLayout";
 import LoginForm from "@/components/auth/LoginForm";
+import AuthErrorToast from "@/components/auth/AuthErrorToast";
 import { pageRoutes } from "@/lib/routes";
 
 export const metadata: Metadata = {
@@ -28,6 +30,9 @@ export default async function LoginPage({
 				</p>
 			}
 		>
+			<Suspense fallback={null}>
+				<AuthErrorToast />
+			</Suspense>
 			<LoginForm redirectTo={redirect || pageRoutes.marketplace} />
 		</AuthLayout>
 	);

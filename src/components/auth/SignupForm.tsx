@@ -4,6 +4,8 @@ import { useActionState, useState } from "react";
 import { signup, type AuthState } from "@/app/auth/actions";
 import Button from "@/components/ui/Button";
 import PasswordInput from "@/components/auth/PasswordInput";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
+import { pageRoutes } from "@/lib/routes";
 
 const initialState: AuthState = { error: null };
 
@@ -22,92 +24,102 @@ export default function SignupForm({ defaultRole }: { defaultRole: Role }) {
 	}
 
 	return (
-		<form action={formAction} className="flex flex-col gap-5">
-			<input type="hidden" name="role" value={role} />
+		<div className="flex flex-col gap-5">
+			<GoogleAuthButton redirectTo={pageRoutes.marketplace} />
 
-			<div className="flex flex-col gap-1.5">
-				<span className="text-sm font-medium text-neutral-500">I am a</span>
-				<div className="grid grid-cols-2 gap-3">
-					<button
-						type="button"
-						onClick={() => setRole("farmer")}
-						className={`rounded-[10px] border-2 px-4 py-3 text-sm font-semibold duration-150 ${
-							role === "farmer"
-								? "border-primary bg-primary-100 text-primary"
-								: "border-neutral-200 text-neutral-400"
-						}`}
-					>
-						Farmer
-					</button>
-					<button
-						type="button"
-						onClick={() => setRole("buyer")}
-						className={`rounded-[10px] border-2 px-4 py-3 text-sm font-semibold duration-150 ${
-							role === "buyer"
-								? "border-primary bg-primary-100 text-primary"
-								: "border-neutral-200 text-neutral-400"
-						}`}
-					>
-						Buyer
-					</button>
+			<div className="flex items-center gap-3">
+				<div className="h-px flex-1 bg-neutral-200" />
+				<span className="text-xs text-neutral-400">or sign up with email</span>
+				<div className="h-px flex-1 bg-neutral-200" />
+			</div>
+
+			<form action={formAction} className="flex flex-col gap-5">
+				<input type="hidden" name="role" value={role} />
+
+				<div className="flex flex-col gap-1.5">
+					<span className="text-sm font-medium text-neutral-500">I am a</span>
+					<div className="grid grid-cols-2 gap-3">
+						<button
+							type="button"
+							onClick={() => setRole("farmer")}
+							className={`rounded-[10px] border-2 px-4 py-3 text-sm font-semibold duration-150 ${
+								role === "farmer"
+									? "border-primary bg-primary-100 text-primary"
+									: "border-neutral-200 text-neutral-400"
+							}`}
+						>
+							Farmer
+						</button>
+						<button
+							type="button"
+							onClick={() => setRole("buyer")}
+							className={`rounded-[10px] border-2 px-4 py-3 text-sm font-semibold duration-150 ${
+								role === "buyer"
+									? "border-primary bg-primary-100 text-primary"
+									: "border-neutral-200 text-neutral-400"
+							}`}
+						>
+							Buyer
+						</button>
+					</div>
+					{state.fieldErrors?.role && (
+						<span className="text-xs text-red-600">{state.fieldErrors.role}</span>
+					)}
 				</div>
-				{state.fieldErrors?.role && (
-					<span className="text-xs text-red-600">{state.fieldErrors.role}</span>
-				)}
-			</div>
 
-			<div className="flex flex-col gap-1.5">
-				<label htmlFor="name" className="text-sm font-medium text-neutral-500">
-					Full name
-				</label>
-				<input
-					id="name"
-					name="name"
-					type="text"
-					placeholder="Ada Okafor"
-					className="input-class"
-				/>
-				{state.fieldErrors?.name && (
-					<span className="text-xs text-red-600">{state.fieldErrors.name}</span>
-				)}
-			</div>
+				<div className="flex flex-col gap-1.5">
+					<label htmlFor="name" className="text-sm font-medium text-neutral-500">
+						Full name
+					</label>
+					<input
+						id="name"
+						name="name"
+						type="text"
+						placeholder="Ada Okafor"
+						className="input-class"
+					/>
+					{state.fieldErrors?.name && (
+						<span className="text-xs text-red-600">{state.fieldErrors.name}</span>
+					)}
+				</div>
 
-			<div className="flex flex-col gap-1.5">
-				<label htmlFor="email" className="text-sm font-medium text-neutral-500">
-					Email
-				</label>
-				<input
-					id="email"
-					name="email"
-					type="email"
-					placeholder="you@example.com"
-					className="input-class"
-				/>
-				{state.fieldErrors?.email && (
-					<span className="text-xs text-red-600">{state.fieldErrors.email}</span>
-				)}
-			</div>
+				<div className="flex flex-col gap-1.5">
+					<label htmlFor="email" className="text-sm font-medium text-neutral-500">
+						Email
+					</label>
+					<input
+						id="email"
+						name="email"
+						type="email"
+						placeholder="you@example.com"
+						className="input-class"
+					/>
+					{state.fieldErrors?.email && (
+						<span className="text-xs text-red-600">{state.fieldErrors.email}</span>
+					)}
+				</div>
 
-			<div className="flex flex-col gap-1.5">
-				<label htmlFor="password" className="text-sm font-medium text-neutral-500">
-					Password
-				</label>
-				<PasswordInput
-					id="password"
-					name="password"
-					placeholder="At least 6 characters"
-					className="input-class"
-				/>
-				{state.fieldErrors?.password && (
-					<span className="text-xs text-red-600">{state.fieldErrors.password}</span>
-				)}
-			</div>
+				<div className="flex flex-col gap-1.5">
+					<label htmlFor="password" className="text-sm font-medium text-neutral-500">
+						Password
+					</label>
+					<PasswordInput
+						id="password"
+						name="password"
+						placeholder="At least 6 characters"
+						className="input-class"
+					/>
+					{state.fieldErrors?.password && (
+						<span className="text-xs text-red-600">{state.fieldErrors.password}</span>
+					)}
+				</div>
 
-			{state.error && <p className="text-sm text-red-600">{state.error}</p>}
+				{state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
-			<Button variant="primary" className="w-full" disabled={pending}>
-				{pending ? "Creating account…" : "Create Account"}
-			</Button>
-		</form>
+				<Button variant="primary" className="w-full" disabled={pending}>
+					{pending ? "Creating account…" : "Create Account"}
+				</Button>
+			</form>
+		</div>
 	);
 }

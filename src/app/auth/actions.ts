@@ -135,6 +135,29 @@ export async function updatePassword(
 	redirect(`${pageRoutes.auth.login}?reset=success`);
 }
 
+/** Kicks off Google OAuth. Both login and signup use this — Supabase
+ * treats "sign in" and "sign up" via OAuth as the same operation (it
+ * creates the account on first use), so there's no separate flow.
+ * Requires the Google provider to be enabled in the Supabase dashboard
+ * (Authentication > Providers > Google) with a Google Cloud OAuth client. */
+export async function signInWithGoogle(formData: FormData) {
+	const redirectTo = (formData.get("redirectTo") as string) || pageRoutes.marketplace;
+
+	const supabase = await createClient();
+	const { data, error } = await supabase.auth.signInWithOAuth({
+		provider: "google",
+		options: {
+			redirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+		},
+	});
+
+	if (error || !data.url) {
+		redirect(`${pageRoutes.auth.login}?error=google-auth-failed`);
+	}
+
+	redirect(data.url);
+}
+
 export async function signOut() {
 	const supabase = await createClient();
 	await supabase.auth.signOut();

@@ -38,7 +38,28 @@ function sortProducts(list: Product[], sort: SortOption) {
 	}
 }
 
-export default function MarketplaceView({ products }: { products: Product[] }) {
+/** Products from favorited farmers bubble to the top, keeping the chosen
+ * sort within each group. */
+function sortWithFavoritesFirst(
+	list: Product[],
+	sort: SortOption,
+	favoriteFarmerIds: Set<string>
+) {
+	if (favoriteFarmerIds.size === 0) return sortProducts(list, sort);
+
+	const favorites = list.filter((p) => favoriteFarmerIds.has(p.farmerId));
+	const rest = list.filter((p) => !favoriteFarmerIds.has(p.farmerId));
+	return [...sortProducts(favorites, sort), ...sortProducts(rest, sort)];
+}
+
+export default function MarketplaceView({
+	products,
+	favoriteFarmerIds = [],
+}: {
+	products: Product[];
+	favoriteFarmerIds?: string[];
+}) {
+	const favoriteSet = useMemo(() => new Set(favoriteFarmerIds), [favoriteFarmerIds]);
 	const [search, setSearch] = useState("");
 	const [category, setCategory] = useState<string>("All");
 	const [location, setLocation] = useState<string>("All");
@@ -60,8 +81,8 @@ export default function MarketplaceView({ products }: { products: Product[] }) {
 			return matchesQuery && matchesCategory && matchesLocation;
 		});
 
-		return sortProducts(result, sort);
-	}, [search, category, location, sort]);
+		return sortWithFavoritesFirst(result, sort, favoriteSet);
+	}, [products, search, category, location, sort, favoriteSet]);
 
 	const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
 	const paginated = filtered.slice(
@@ -198,7 +219,11 @@ export default function MarketplaceView({ products }: { products: Product[] }) {
 									visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 								}}
 							>
-								<ProductCard product={product} onSelect={setSelectedProduct} />
+								<ProductCard
+									product={product}
+									onSelect={setSelectedProduct}
+									isFavoriteFarmer={favoriteSet.has(product.farmerId)}
+								/>
 							</motion.div>
 						))}
 					</motion.div>
@@ -207,7 +232,11 @@ export default function MarketplaceView({ products }: { products: Product[] }) {
 				</>
 			)}
 
-			<ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+			<ProductModal
+				product={selectedProduct}
+				onClose={() => setSelectedProduct(null)}
+				isFavoriteFarmer={selectedProduct ? favoriteSet.has(selectedProduct.farmerId) : false}
+			/>
 		</div>
 	);
 }

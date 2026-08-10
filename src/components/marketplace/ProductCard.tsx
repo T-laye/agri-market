@@ -18,9 +18,11 @@ function formatNaira(amount: number) {
 export default function ProductCard({
 	product,
 	onSelect,
+	isFavoriteFarmer,
 }: {
 	product: Product;
 	onSelect?: (product: Product) => void;
+	isFavoriteFarmer?: boolean;
 }) {
 	const addItem = useCartStore((state) => state.addItem);
 
@@ -66,6 +68,12 @@ export default function ProductCard({
 					<span className="truncate">{product.farmerName}</span>
 					{product.farmerVerified && (
 						<HiOutlineBadgeCheck className="text-primary text-sm shrink-0" />
+					)}
+					{isFavoriteFarmer && (
+						<HiStar
+							className="text-secondary-500 text-sm shrink-0"
+							aria-label="Favorite farmer"
+						/>
 					)}
 				</div>
 

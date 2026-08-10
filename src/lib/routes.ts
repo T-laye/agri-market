@@ -2,6 +2,7 @@ export const pageRoutes = {
 	home: "/",
 
 	marketplace: "/marketplace",
+	marketplaceFarmers: "/marketplace/farmers",
 	cart: "/cart",
 	checkout: "/checkout",
 	checkoutCallback: "/checkout/callback",

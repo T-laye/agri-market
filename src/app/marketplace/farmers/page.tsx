@@ -1,26 +1,25 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import MarketplaceView from "@/components/marketplace/MarketplaceView";
 import MarketplaceTabs from "@/components/marketplace/MarketplaceTabs";
+import FarmersView from "@/components/marketplace/FarmersView";
 import { createClient } from "@/lib/supabase/server";
-import { getMarketplaceProducts } from "@/lib/data/products";
-import { getFavoriteFarmerIds } from "@/lib/data/publicFarmers";
+import { getPublicFarmers, getFavoriteFarmerIds } from "@/lib/data/publicFarmers";
 
 export const metadata: Metadata = {
-	title: "Marketplace | AgriMarket Nigeria",
+	title: "Farmers | AgriMarket Nigeria",
 	description:
-		"Browse fresh produce from verified Nigerian farmers. Search and filter by category, location, and price — no account needed to browse.",
+		"Browse verified Nigerian farmers on AgriMarket and save your favorites for quick access.",
 };
 
-export default async function MarketplacePage() {
+export default async function MarketplaceFarmersPage() {
 	const supabase = await createClient();
 	const {
 		data: { user },
 	} = await supabase.auth.getUser();
 
-	const [products, favoriteFarmerIds] = await Promise.all([
-		getMarketplaceProducts(supabase),
+	const [farmers, favoriteIds] = await Promise.all([
+		getPublicFarmers(supabase),
 		user ? getFavoriteFarmerIds(supabase, user.id) : Promise.resolve(new Set<string>()),
 	]);
 
@@ -31,10 +30,10 @@ export default async function MarketplacePage() {
 				<div className="bg-primary-900 pt-28 pb-10 md:pt-36 md:pb-14">
 					<div className="custom-container flex flex-col gap-5">
 						<div className="flex flex-col gap-2">
-							<h1 className="h3 text-white">Browse Fresh Produce</h1>
+							<h1 className="h3 text-white">Meet Our Farmers</h1>
 							<p className="p1 text-white/75">
-								Direct from verified Nigerian farmers. Add items to your cart —
-								you can sign up when you&apos;re ready to check out.
+								Verified Nigerian farmers selling directly on AgriMarket. Star your
+								favorites to keep them close.
 							</p>
 						</div>
 						<MarketplaceTabs />
@@ -42,7 +41,7 @@ export default async function MarketplacePage() {
 				</div>
 
 				<div className="custom-container py-10 md:py-14">
-					<MarketplaceView products={products} favoriteFarmerIds={[...favoriteFarmerIds]} />
+					<FarmersView farmers={farmers} favoriteIds={[...favoriteIds]} />
 				</div>
 			</main>
 			<Footer />

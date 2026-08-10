@@ -14,6 +14,7 @@ import { HiOutlineShoppingCart } from "react-icons/hi2";
 import type { Product } from "@/lib/data/products";
 import { useCartStore } from "@/store/cart";
 import Button from "@/components/ui/Button";
+import FavoriteStarButton from "./FavoriteStarButton";
 
 function formatNaira(amount: number) {
 	return new Intl.NumberFormat("en-NG", {
@@ -26,9 +27,11 @@ function formatNaira(amount: number) {
 export default function ProductModal({
 	product,
 	onClose,
+	isFavoriteFarmer = false,
 }: {
 	product: Product | null;
 	onClose: () => void;
+	isFavoriteFarmer?: boolean;
 }) {
 	const [activeImage, setActiveImage] = useState(0);
 	const addItem = useCartStore((state) => state.addItem);
@@ -160,6 +163,11 @@ export default function ProductModal({
 												Verified Farmer
 											</span>
 										)}
+										<FavoriteStarButton
+											farmerId={product.farmerId}
+											initialFavorited={isFavoriteFarmer}
+											className="ml-auto"
+										/>
 									</div>
 
 									<div className="flex items-start gap-2 text-sm text-neutral-400">

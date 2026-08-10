@@ -88,10 +88,11 @@ type ProductRow = {
 	address: string;
 	is_active: boolean;
 	created_at: string;
-	farmer_profiles: { farm_name: string; kyc_status: string } | null;
 };
 
-function mapProductRow(row: ProductRow): Product {
+type FarmerInfo = { farmName: string; verified: boolean };
+
+function mapProductRow(row: ProductRow, farmer: FarmerInfo | undefined): Product {
 	const images = Array.isArray(row.images) ? (row.images as string[]) : [];
 
 	return {
@@ -108,13 +109,42 @@ function mapProductRow(row: ProductRow): Product {
 		location: row.location,
 		address: row.address,
 		isActive: row.is_active,
-		farmerName: row.farmer_profiles?.farm_name ?? "AgriMarket Farmer",
-		farmerVerified: row.farmer_profiles?.kyc_status === "verified",
+		farmerName: farmer?.farmName ?? "AgriMarket Farmer",
+		farmerVerified: farmer?.verified ?? false,
 		createdAt: row.created_at,
 	};
 }
 
-const PRODUCT_SELECT = "*, farmer_profiles(farm_name, kyc_status)";
+/** Batch-fetches (farm_name, kyc_status) for a set of farmer ids via a
+ * SECURITY DEFINER function — a plain embedded join against
+ * farmer_profiles(farm_name, kyc_status) silently comes back null for
+ * anyone but that farmer or an admin, since farmer_profiles has its own
+ * RLS. See 0011_fix_marketplace_visibility.sql. */
+async function fetchFarmerInfo(
+	supabase: SupabaseClient,
+	rows: ProductRow[]
+): Promise<Map<string, FarmerInfo>> {
+	const farmerIds = [...new Set(rows.map((r) => r.farmer_id))];
+	const map = new Map<string, FarmerInfo>();
+	if (farmerIds.length === 0) return map;
+
+	const { data } = await supabase.rpc("get_public_farmer_info", {
+		p_farmer_ids: farmerIds,
+	});
+
+	for (const f of (data ?? []) as { id: string; farm_name: string; kyc_status: string }[]) {
+		map.set(f.id, { farmName: f.farm_name, verified: f.kyc_status === "verified" });
+	}
+	return map;
+}
+
+async function mapProductRows(
+	supabase: SupabaseClient,
+	rows: ProductRow[]
+): Promise<Product[]> {
+	const farmerInfo = await fetchFarmerInfo(supabase, rows);
+	return rows.map((row) => mapProductRow(row, farmerInfo.get(row.farmer_id)));
+}
 
 /** Public marketplace listing — RLS already restricts this to active
  * products from verified farmers, the explicit filter here just keeps
@@ -124,12 +154,12 @@ export async function getMarketplaceProducts(
 ): Promise<Product[]> {
 	const { data, error } = await supabase
 		.from("products")
-		.select(PRODUCT_SELECT)
+		.select("*")
 		.eq("is_active", true)
 		.order("created_at", { ascending: false });
 
 	if (error || !data) return [];
-	return (data as unknown as ProductRow[]).map(mapProductRow);
+	return mapProductRows(supabase, data as unknown as ProductRow[]);
 }
 
 /** A farmer's own products, any status (active/inactive, verified or not). */
@@ -139,12 +169,12 @@ export async function getFarmerProducts(
 ): Promise<Product[]> {
 	const { data, error } = await supabase
 		.from("products")
-		.select(PRODUCT_SELECT)
+		.select("*")
 		.eq("farmer_id", farmerId)
 		.order("created_at", { ascending: false });
 
 	if (error || !data) return [];
-	return (data as unknown as ProductRow[]).map(mapProductRow);
+	return mapProductRows(supabase, data as unknown as ProductRow[]);
 }
 
 /** Admin-only: every product platform-wide, regardless of farmer
@@ -153,11 +183,11 @@ export async function getFarmerProducts(
 export async function getAllProducts(supabase: SupabaseClient): Promise<Product[]> {
 	const { data, error } = await supabase
 		.from("products")
-		.select(PRODUCT_SELECT)
+		.select("*")
 		.order("created_at", { ascending: false });
 
 	if (error || !data) return [];
-	return (data as unknown as ProductRow[]).map(mapProductRow);
+	return mapProductRows(supabase, data as unknown as ProductRow[]);
 }
 
 export async function getProductById(
@@ -166,18 +196,13 @@ export async function getProductById(
 ): Promise<Product | null> {
 	const { data, error } = await supabase
 		.from("products")
-		.select(PRODUCT_SELECT)
+		.select("*")
 		.eq("id", id)
 		.maybeSingle();
 
-	console.log(
-		"[getProductById] id=" +
-			id +
-			" images=" +
-			JSON.stringify((data as { images?: unknown } | null)?.images ?? null) +
-			" error=" +
-			JSON.stringify(error ?? null)
-	);
+	if (error || !data) return null;
 
-	return data ? mapProductRow(data as unknown as ProductRow) : null;
+	const row = data as unknown as ProductRow;
+	const farmerInfo = await fetchFarmerInfo(supabase, [row]);
+	return mapProductRow(row, farmerInfo.get(row.farmer_id));
 }

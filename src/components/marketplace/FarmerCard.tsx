@@ -1,5 +1,8 @@
+import Link from "next/link";
 import { HiOutlineLocationMarker, HiOutlineCube } from "react-icons/hi";
 import type { PublicFarmer } from "@/lib/data/publicFarmers";
+import { pageRoutes } from "@/lib/routes";
+import Avatar from "@/components/Avatar";
 import FavoriteStarButton from "./FavoriteStarButton";
 
 export default function FarmerCard({
@@ -9,13 +12,12 @@ export default function FarmerCard({
 	farmer: PublicFarmer;
 	favorited: boolean;
 }) {
-	const initial = farmer.farmName.charAt(0).toUpperCase() || "A";
-
 	return (
-		<div className="flex items-center gap-4 border border-neutral-200 rounded-[15px] p-5 duration-150 hover:border-primary">
-			<span className="w-14 h-14 rounded-full bg-primary-100 text-primary flex items-center justify-center text-xl font-bold shrink-0">
-				{initial}
-			</span>
+		<Link
+			href={`${pageRoutes.marketplaceFarmers}/${farmer.id}`}
+			className="flex items-center gap-4 border border-neutral-200 rounded-[15px] p-5 duration-150 hover:border-primary"
+		>
+			<Avatar avatarUrl={farmer.avatarUrl} name={farmer.farmName} size={56} />
 
 			<div className="flex-1 min-w-0">
 				<p className="font-semibold text-sm text-neutral-500 truncate">{farmer.farmName}</p>
@@ -31,6 +33,6 @@ export default function FarmerCard({
 			</div>
 
 			<FavoriteStarButton farmerId={farmer.id} initialFavorited={favorited} className="shrink-0" />
-		</div>
+		</Link>
 	);
 }

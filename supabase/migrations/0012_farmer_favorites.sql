@@ -10,14 +10,17 @@ create table if not exists farmer_favorites (
 
 alter table farmer_favorites enable row level security;
 
+drop policy if exists "Users can view their own favorite farmers" on farmer_favorites;
 create policy "Users can view their own favorite farmers"
 on farmer_favorites for select
 using (auth.uid() = buyer_id);
 
+drop policy if exists "Users can add their own favorite farmers" on farmer_favorites;
 create policy "Users can add their own favorite farmers"
 on farmer_favorites for insert
 with check (auth.uid() = buyer_id);
 
+drop policy if exists "Users can remove their own favorite farmers" on farmer_favorites;
 create policy "Users can remove their own favorite farmers"
 on farmer_favorites for delete
 using (auth.uid() = buyer_id);

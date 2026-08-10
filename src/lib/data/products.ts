@@ -162,6 +162,24 @@ export async function getMarketplaceProducts(
 	return mapProductRows(supabase, data as unknown as ProductRow[]);
 }
 
+/** A single verified farmer's active products, for the public farmer
+ * detail page — RLS restricts this to active products from verified
+ * farmers same as getMarketplaceProducts, just scoped to one farmer. */
+export async function getPublicFarmerProducts(
+	supabase: SupabaseClient,
+	farmerId: string,
+): Promise<Product[]> {
+	const { data, error } = await supabase
+		.from("products")
+		.select("*")
+		.eq("farmer_id", farmerId)
+		.eq("is_active", true)
+		.order("created_at", { ascending: false });
+
+	if (error || !data) return [];
+	return mapProductRows(supabase, data as unknown as ProductRow[]);
+}
+
 /** A farmer's own products, any status (active/inactive, verified or not). */
 export async function getFarmerProducts(
 	supabase: SupabaseClient,

@@ -43,6 +43,14 @@ export async function initiateCheckout(
 		return { error: "Please fix the errors below", fieldErrors: flattenZodErrors(parsed.error) };
 	}
 
+	// Keep the account profile's phone in sync with whatever they confirm
+	// at checkout — best-effort, doesn't block checkout if it fails.
+	if (parsed.data.contactPhone !== user.user_metadata?.phone) {
+		await supabase.auth.updateUser({
+			data: { ...user.user_metadata, phone: parsed.data.contactPhone },
+		});
+	}
+
 	let cartItems: CartItemInput[];
 	try {
 		cartItems = JSON.parse(String(formData.get("cartItems") ?? "[]"));

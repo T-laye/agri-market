@@ -63,19 +63,21 @@ export default function CheckoutForm({
 			<div className="flex-1 flex flex-col gap-6 order-2 lg:order-1">
 				<div className="flex flex-col gap-1.5">
 					<label htmlFor="contactPhone" className="text-sm font-medium text-neutral-500">
-						Contact phone
+						Contact phone <span className="text-red-500">*</span>
 					</label>
 					<input
 						id="contactPhone"
 						name="contactPhone"
 						type="tel"
+						required
+						pattern="\+?[0-9]{10,14}"
 						defaultValue={initialPhone}
 						placeholder="080XXXXXXXX"
 						className="input-class"
 					/>
 					<span className="text-xs text-neutral-400">
-						The farmer can reach you here once they accept your order — it&apos;s only
-						shared with farmers you actually order from.
+						Required — the farmer can reach you here once they accept your order.
+						It&apos;s only shared with farmers you actually order from.
 					</span>
 					{state.fieldErrors?.contactPhone && (
 						<span className="text-xs text-red-600">{state.fieldErrors.contactPhone}</span>

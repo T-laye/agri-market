@@ -1,26 +1,15 @@
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getFarmerProfile } from "@/lib/data/farmer";
 import { getFarmerOrderItems } from "@/lib/data/orders";
 import { pageRoutes } from "@/lib/routes";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import OrderItemStatusBadge from "@/components/dashboard/OrderItemStatusBadge";
-import FarmerOrderItemActions from "@/components/dashboard/FarmerOrderItemActions";
-import CallButton from "@/components/dashboard/CallButton";
+import FarmerOrdersList from "@/components/dashboard/FarmerOrdersList";
 
 export const metadata: Metadata = {
 	title: "Orders | AgriMarket Nigeria",
 };
-
-function formatNaira(amount: number) {
-	return new Intl.NumberFormat("en-NG", {
-		style: "currency",
-		currency: "NGN",
-		maximumFractionDigits: 0,
-	}).format(amount);
-}
 
 export default async function FarmerOrdersPage() {
 	const supabase = await createClient();
@@ -50,6 +39,7 @@ export default async function FarmerOrdersPage() {
 					<h2 className="font-bold text-lg text-neutral-500">Orders</h2>
 					<p className="text-sm text-neutral-400">
 						{items.length} {items.length === 1 ? "order item" : "order items"} to fulfill
+						{items.length > 0 && " · click an order for full details"}
 					</p>
 				</div>
 
@@ -61,57 +51,7 @@ export default async function FarmerOrdersPage() {
 						</p>
 					</div>
 				) : (
-					<div className="flex flex-col divide-y divide-neutral-200 border border-neutral-200 rounded-[15px] overflow-hidden">
-						{items.map((item) => {
-							// Contacts are only revealed once this item has actually been
-							// engaged with — not while it's still sitting unaccepted, and
-							// not once it's been cancelled.
-							const contactRevealed = item.status !== "pending" && item.status !== "cancelled";
-
-							return (
-								<div
-									key={item.id}
-									className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4 p-4"
-								>
-									<div className="flex items-center gap-4 flex-1 min-w-0">
-										{item.productImage && (
-											<div className="relative w-14 h-14 rounded-[10px] overflow-hidden shrink-0 bg-neutral-100">
-												<Image
-													src={item.productImage}
-													alt={item.productName}
-													fill
-													sizes="56px"
-													className="object-cover"
-													unoptimized
-												/>
-											</div>
-										)}
-										<div className="min-w-0">
-											<p className="font-semibold text-sm text-neutral-500 truncate">
-												{item.productName}
-											</p>
-											<p className="text-xs text-neutral-400">
-												{item.quantity} × {formatNaira(item.unitPrice)} · Order #
-												{item.order.id.slice(0, 8)}
-											</p>
-											<p className="text-xs text-neutral-400 truncate">
-												Deliver to: {item.order.deliveryAddress}, {item.order.deliveryState}{" "}
-												State
-											</p>
-										</div>
-									</div>
-
-									<div className="flex flex-wrap items-center gap-2 lg:justify-end">
-										<OrderItemStatusBadge status={item.status} />
-										{contactRevealed && item.order.contactPhone && (
-											<CallButton phone={item.order.contactPhone} label="Call Buyer" />
-										)}
-										<FarmerOrderItemActions itemId={item.id} status={item.status} />
-									</div>
-								</div>
-							);
-						})}
-					</div>
+					<FarmerOrdersList items={items} />
 				)}
 			</div>
 		</DashboardLayout>

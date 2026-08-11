@@ -16,9 +16,13 @@ const NEXT_LABEL: Record<string, string> = {
 export default function FarmerOrderItemActions({
 	itemId,
 	status,
+	onActionComplete,
 }: {
 	itemId: string;
 	status: OrderItemStatus;
+	/** Called after a successful advance/cancel — e.g. so a parent modal
+	 * showing this item's (now stale) status can close itself. */
+	onActionComplete?: () => void;
 }) {
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
@@ -36,6 +40,7 @@ export default function FarmerOrderItemActions({
 			}
 			toast.success("Order updated");
 			router.refresh();
+			onActionComplete?.();
 		});
 	}
 
@@ -49,6 +54,7 @@ export default function FarmerOrderItemActions({
 			}
 			toast.success("Order item cancelled");
 			router.refresh();
+			onActionComplete?.();
 		});
 	}
 

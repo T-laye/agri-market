@@ -174,7 +174,14 @@ export async function getBuyerOrders(
 export type FarmerOrderItem = OrderItem & {
 	order: Pick<
 		Order,
-		"id" | "createdAt" | "contactPhone" | "deliveryState" | "deliveryAddress" | "paymentStatus"
+		| "id"
+		| "createdAt"
+		| "contactPhone"
+		| "deliveryState"
+		| "deliveryCity"
+		| "deliveryAddress"
+		| "deliveryLandmark"
+		| "paymentStatus"
 	>;
 };
 
@@ -184,7 +191,9 @@ type FarmerOrderItemRow = OrderItemRow & {
 		created_at: string;
 		contact_phone: string | null;
 		delivery_state: string;
+		delivery_city: string | null;
 		delivery_address: string;
+		delivery_landmark: string | null;
 		payment_status: PaymentStatus;
 	};
 };
@@ -197,14 +206,16 @@ function mapFarmerOrderItemRow(row: FarmerOrderItemRow): FarmerOrderItem {
 			createdAt: row.orders.created_at,
 			contactPhone: row.orders.contact_phone,
 			deliveryState: row.orders.delivery_state,
+			deliveryCity: row.orders.delivery_city,
 			deliveryAddress: row.orders.delivery_address,
+			deliveryLandmark: row.orders.delivery_landmark,
 			paymentStatus: row.orders.payment_status,
 		},
 	};
 }
 
 const FARMER_ORDER_ITEM_SELECT =
-	"*, orders!inner(id, created_at, contact_phone, delivery_state, delivery_address, payment_status)";
+	"*, orders!inner(id, created_at, contact_phone, delivery_state, delivery_city, delivery_address, delivery_landmark, payment_status)";
 
 /** A farmer's incoming order items. Only items from *paid* orders are
  * included — an unpaid order isn't something a farmer should act on yet. */

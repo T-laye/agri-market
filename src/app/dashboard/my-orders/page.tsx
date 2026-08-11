@@ -3,11 +3,13 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getFarmerProfile } from "@/lib/data/farmer";
-import { getBuyerOrders } from "@/lib/data/orders";
+import { getBuyerOrders, type OrderItemStatus } from "@/lib/data/orders";
+import { getFarmerPhonesForBuyer } from "@/lib/data/publicFarmers";
 import { pageRoutes } from "@/lib/routes";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import OrderItemStatusBadge from "@/components/dashboard/OrderItemStatusBadge";
 import ConfirmDeliveryButton from "@/components/dashboard/ConfirmDeliveryButton";
+import CallButton from "@/components/dashboard/CallButton";
 import Button from "@/components/ui/Button";
 
 export const metadata: Metadata = {
@@ -20,6 +22,13 @@ function formatNaira(amount: number) {
 		currency: "NGN",
 		maximumFractionDigits: 0,
 	}).format(amount);
+}
+
+// Contacts are only revealed once the farmer has actually engaged with
+// the order — not while it's still sitting unaccepted, and not once it's
+// been cancelled.
+function isContactRevealed(status: OrderItemStatus) {
+	return status !== "pending" && status !== "cancelled";
 }
 
 export default async function MyOrdersPage() {
@@ -35,6 +44,12 @@ export default async function MyOrdersPage() {
 	const isFarmer = Boolean(user.user_metadata?.is_farmer);
 	const farmerProfile = isFarmer ? await getFarmerProfile(supabase, user.id) : null;
 	const orders = await getBuyerOrders(supabase, user.id);
+
+	const revealedFarmerIds = orders
+		.flatMap((order) => order.items)
+		.filter((item) => isContactRevealed(item.status))
+		.map((item) => item.farmerId);
+	const farmerPhones = await getFarmerPhonesForBuyer(supabase, revealedFarmerIds);
 
 	return (
 		<DashboardLayout isFarmer={isFarmer} kycStatus={farmerProfile?.kyc_status} wide>
@@ -94,42 +109,49 @@ export default async function MyOrdersPage() {
 								</div>
 
 								<div className="flex flex-col divide-y divide-neutral-100 px-4 sm:px-5">
-									{order.items.map((item) => (
-										<div
-											key={item.id}
-											className="flex flex-col sm:flex-row sm:items-center gap-3 py-4"
-										>
-											<div className="flex items-center gap-3 flex-1 min-w-0">
-												{item.productImage && (
-													<div className="relative w-12 h-12 rounded-[10px] overflow-hidden shrink-0 bg-neutral-100">
-														<Image
-															src={item.productImage}
-															alt={item.productName}
-															fill
-															sizes="48px"
-															className="object-cover"
-															unoptimized
-														/>
+									{order.items.map((item) => {
+										const farmerPhone = farmerPhones.get(item.farmerId);
+
+										return (
+											<div
+												key={item.id}
+												className="flex flex-col sm:flex-row sm:items-center gap-3 py-4"
+											>
+												<div className="flex items-center gap-3 flex-1 min-w-0">
+													{item.productImage && (
+														<div className="relative w-12 h-12 rounded-[10px] overflow-hidden shrink-0 bg-neutral-100">
+															<Image
+																src={item.productImage}
+																alt={item.productName}
+																fill
+																sizes="48px"
+																className="object-cover"
+																unoptimized
+															/>
+														</div>
+													)}
+													<div className="min-w-0">
+														<p className="text-sm font-semibold text-neutral-500 truncate">
+															{item.productName}
+														</p>
+														<p className="text-xs text-neutral-400">
+															{item.quantity} × {formatNaira(item.unitPrice)}
+														</p>
 													</div>
-												)}
-												<div className="min-w-0">
-													<p className="text-sm font-semibold text-neutral-500 truncate">
-														{item.productName}
-													</p>
-													<p className="text-xs text-neutral-400">
-														{item.quantity} × {formatNaira(item.unitPrice)}
-													</p>
+												</div>
+
+												<div className="flex flex-wrap items-center gap-2 sm:justify-end sm:shrink-0">
+													<OrderItemStatusBadge status={item.status} />
+													{farmerPhone && (
+														<CallButton phone={farmerPhone} label="Call Farmer" />
+													)}
+													{item.status === "delivered" && (
+														<ConfirmDeliveryButton itemId={item.id} />
+													)}
 												</div>
 											</div>
-
-											<div className="flex items-center justify-between sm:justify-end gap-3 pl-15 sm:pl-0">
-												<OrderItemStatusBadge status={item.status} />
-												{item.status === "delivered" && (
-													<ConfirmDeliveryButton itemId={item.id} />
-												)}
-											</div>
-										</div>
-									))}
+										);
+									})}
 								</div>
 
 								<div className="flex items-center justify-between px-4 sm:px-5 py-3 border-t border-neutral-100">

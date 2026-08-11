@@ -35,6 +35,7 @@ export default async function CheckoutPage() {
 					</div>
 
 					<CheckoutForm
+						initialPhone={(metadata.phone as string) ?? ""}
 						initialState={(metadata.state as string) ?? ""}
 						initialCity={(metadata.city as string) ?? ""}
 						initialAddress={(metadata.address as string) ?? ""}

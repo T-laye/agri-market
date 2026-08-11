@@ -32,6 +32,7 @@ export async function initiateCheckout(
 	}
 
 	const parsed = checkoutSchema.safeParse({
+		contactPhone: formData.get("contactPhone"),
 		deliveryState: formData.get("deliveryState"),
 		deliveryCity: formData.get("deliveryCity") ?? "",
 		deliveryAddress: formData.get("deliveryAddress"),
@@ -107,13 +108,15 @@ export async function initiateCheckout(
 		return { error: "None of the items in your cart are currently available." };
 	}
 
-	const { deliveryState, deliveryCity, deliveryAddress, deliveryLandmark } = parsed.data;
+	const { contactPhone, deliveryState, deliveryCity, deliveryAddress, deliveryLandmark } =
+		parsed.data;
 
 	const { data: order, error: orderError } = await supabase
 		.from("orders")
 		.insert({
 			buyer_id: user.id,
 			total_amount: totalAmount,
+			contact_phone: contactPhone,
 			delivery_state: deliveryState,
 			delivery_city: deliveryCity || null,
 			delivery_address: deliveryAddress,

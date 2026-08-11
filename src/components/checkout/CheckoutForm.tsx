@@ -20,11 +20,13 @@ function formatNaira(amount: number) {
 }
 
 export default function CheckoutForm({
+	initialPhone,
 	initialState: initialDeliveryState,
 	initialCity,
 	initialAddress,
 	initialLandmark,
 }: {
+	initialPhone: string;
 	initialState: string;
 	initialCity: string;
 	initialAddress: string;
@@ -59,6 +61,27 @@ export default function CheckoutForm({
 			<input type="hidden" name="cartItems" value={cartItemsJson} />
 
 			<div className="flex-1 flex flex-col gap-6 order-2 lg:order-1">
+				<div className="flex flex-col gap-1.5">
+					<label htmlFor="contactPhone" className="text-sm font-medium text-neutral-500">
+						Contact phone
+					</label>
+					<input
+						id="contactPhone"
+						name="contactPhone"
+						type="tel"
+						defaultValue={initialPhone}
+						placeholder="080XXXXXXXX"
+						className="input-class"
+					/>
+					<span className="text-xs text-neutral-400">
+						The farmer can reach you here once they accept your order — it&apos;s only
+						shared with farmers you actually order from.
+					</span>
+					{state.fieldErrors?.contactPhone && (
+						<span className="text-xs text-red-600">{state.fieldErrors.contactPhone}</span>
+					)}
+				</div>
+
 				<div className="flex flex-col gap-1.5">
 					<label htmlFor="deliveryState" className="text-sm font-medium text-neutral-500">
 						Delivery state

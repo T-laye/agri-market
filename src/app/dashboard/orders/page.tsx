@@ -8,6 +8,7 @@ import { pageRoutes } from "@/lib/routes";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import OrderItemStatusBadge from "@/components/dashboard/OrderItemStatusBadge";
 import FarmerOrderItemActions from "@/components/dashboard/FarmerOrderItemActions";
+import CallButton from "@/components/dashboard/CallButton";
 
 export const metadata: Metadata = {
 	title: "Orders | AgriMarket Nigeria",
@@ -61,45 +62,55 @@ export default async function FarmerOrdersPage() {
 					</div>
 				) : (
 					<div className="flex flex-col divide-y divide-neutral-200 border border-neutral-200 rounded-[15px] overflow-hidden">
-						{items.map((item) => (
-							<div
-								key={item.id}
-								className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4 p-4"
-							>
-								<div className="flex items-center gap-4 flex-1 min-w-0">
-									{item.productImage && (
-										<div className="relative w-14 h-14 rounded-[10px] overflow-hidden shrink-0 bg-neutral-100">
-											<Image
-												src={item.productImage}
-												alt={item.productName}
-												fill
-												sizes="56px"
-												className="object-cover"
-												unoptimized
-											/>
+						{items.map((item) => {
+							// Contacts are only revealed once this item has actually been
+							// engaged with — not while it's still sitting unaccepted, and
+							// not once it's been cancelled.
+							const contactRevealed = item.status !== "pending" && item.status !== "cancelled";
+
+							return (
+								<div
+									key={item.id}
+									className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4 p-4"
+								>
+									<div className="flex items-center gap-4 flex-1 min-w-0">
+										{item.productImage && (
+											<div className="relative w-14 h-14 rounded-[10px] overflow-hidden shrink-0 bg-neutral-100">
+												<Image
+													src={item.productImage}
+													alt={item.productName}
+													fill
+													sizes="56px"
+													className="object-cover"
+													unoptimized
+												/>
+											</div>
+										)}
+										<div className="min-w-0">
+											<p className="font-semibold text-sm text-neutral-500 truncate">
+												{item.productName}
+											</p>
+											<p className="text-xs text-neutral-400">
+												{item.quantity} × {formatNaira(item.unitPrice)} · Order #
+												{item.order.id.slice(0, 8)}
+											</p>
+											<p className="text-xs text-neutral-400 truncate">
+												Deliver to: {item.order.deliveryAddress}, {item.order.deliveryState}{" "}
+												State
+											</p>
 										</div>
-									)}
-									<div className="min-w-0">
-										<p className="font-semibold text-sm text-neutral-500 truncate">
-											{item.productName}
-										</p>
-										<p className="text-xs text-neutral-400">
-											{item.quantity} × {formatNaira(item.unitPrice)} · Order #
-											{item.order.id.slice(0, 8)}
-										</p>
-										<p className="text-xs text-neutral-400 truncate">
-											Deliver to: {item.order.deliveryAddress}, {item.order.deliveryState}{" "}
-											State
-										</p>
+									</div>
+
+									<div className="flex flex-wrap items-center gap-2 lg:justify-end">
+										<OrderItemStatusBadge status={item.status} />
+										{contactRevealed && item.order.contactPhone && (
+											<CallButton phone={item.order.contactPhone} label="Call Buyer" />
+										)}
+										<FarmerOrderItemActions itemId={item.id} status={item.status} />
 									</div>
 								</div>
-
-								<div className="flex items-center justify-between lg:justify-end gap-3 pl-18 lg:pl-0">
-									<OrderItemStatusBadge status={item.status} />
-									<FarmerOrderItemActions itemId={item.id} status={item.status} />
-								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				)}
 			</div>

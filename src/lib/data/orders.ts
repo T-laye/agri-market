@@ -49,6 +49,7 @@ export type Order = {
 	id: string;
 	buyerId: string;
 	totalAmount: number;
+	contactPhone: string | null;
 	deliveryState: string;
 	deliveryCity: string | null;
 	deliveryAddress: string;
@@ -81,6 +82,7 @@ type OrderRow = {
 	id: string;
 	buyer_id: string;
 	total_amount: number | string;
+	contact_phone: string | null;
 	delivery_state: string;
 	delivery_city: string | null;
 	delivery_address: string;
@@ -117,6 +119,7 @@ function mapOrderRow(row: OrderRow): Order {
 		id: row.id,
 		buyerId: row.buyer_id,
 		totalAmount: Number(row.total_amount),
+		contactPhone: row.contact_phone,
 		deliveryState: row.delivery_state,
 		deliveryCity: row.delivery_city,
 		deliveryAddress: row.delivery_address,
@@ -169,13 +172,17 @@ export async function getBuyerOrders(
 }
 
 export type FarmerOrderItem = OrderItem & {
-	order: Pick<Order, "id" | "createdAt" | "deliveryState" | "deliveryAddress" | "paymentStatus">;
+	order: Pick<
+		Order,
+		"id" | "createdAt" | "contactPhone" | "deliveryState" | "deliveryAddress" | "paymentStatus"
+	>;
 };
 
 type FarmerOrderItemRow = OrderItemRow & {
 	orders: {
 		id: string;
 		created_at: string;
+		contact_phone: string | null;
 		delivery_state: string;
 		delivery_address: string;
 		payment_status: PaymentStatus;
@@ -188,12 +195,16 @@ function mapFarmerOrderItemRow(row: FarmerOrderItemRow): FarmerOrderItem {
 		order: {
 			id: row.orders.id,
 			createdAt: row.orders.created_at,
+			contactPhone: row.orders.contact_phone,
 			deliveryState: row.orders.delivery_state,
 			deliveryAddress: row.orders.delivery_address,
 			paymentStatus: row.orders.payment_status,
 		},
 	};
 }
+
+const FARMER_ORDER_ITEM_SELECT =
+	"*, orders!inner(id, created_at, contact_phone, delivery_state, delivery_address, payment_status)";
 
 /** A farmer's incoming order items. Only items from *paid* orders are
  * included — an unpaid order isn't something a farmer should act on yet. */
@@ -203,7 +214,7 @@ export async function getFarmerOrderItems(
 ): Promise<FarmerOrderItem[]> {
 	const { data, error } = await supabase
 		.from("order_items")
-		.select("*, orders!inner(id, created_at, delivery_state, delivery_address, payment_status)")
+		.select(FARMER_ORDER_ITEM_SELECT)
 		.eq("farmer_id", farmerId)
 		.eq("orders.payment_status", "paid")
 		.order("created_at", { ascending: false });
@@ -218,7 +229,7 @@ export async function getFarmerOrderItemById(
 ): Promise<FarmerOrderItem | null> {
 	const { data } = await supabase
 		.from("order_items")
-		.select("*, orders!inner(id, created_at, delivery_state, delivery_address, payment_status)")
+		.select(FARMER_ORDER_ITEM_SELECT)
 		.eq("id", id)
 		.maybeSingle();
 

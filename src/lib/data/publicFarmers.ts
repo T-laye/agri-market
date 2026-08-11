@@ -48,6 +48,27 @@ export async function getPublicFarmer(
 	return mapPublicFarmerRow((data as PublicFarmerRow[])[0]);
 }
 
+/** Phone numbers for farmers the current buyer has an accepted-or-further
+ * order item with — see 0014_order_contact_and_calls.sql. Anyone else's
+ * farmer_id in the list just silently comes back without an entry. */
+export async function getFarmerPhonesForBuyer(
+	supabase: SupabaseClient,
+	farmerIds: string[]
+): Promise<Map<string, string>> {
+	const map = new Map<string, string>();
+	if (farmerIds.length === 0) return map;
+
+	const { data, error } = await supabase.rpc("get_order_farmer_phones", {
+		p_farmer_ids: [...new Set(farmerIds)],
+	});
+	if (error || !data) return map;
+
+	for (const row of data as { farmer_id: string; phone: string }[]) {
+		map.set(row.farmer_id, row.phone);
+	}
+	return map;
+}
+
 /** The current user's favorited farmer ids, as a Set for quick lookup. */
 export async function getFavoriteFarmerIds(
 	supabase: SupabaseClient,
